@@ -2,6 +2,7 @@ package cat.uvic.xips.services;
 
 import cat.uvic.xips.dto.UserCreationRequest;
 import cat.uvic.xips.dto.UserDTO;
+import cat.uvic.xips.entities.Rating;
 import cat.uvic.xips.entities.User;
 import cat.uvic.xips.entities.UserProfile;
 import cat.uvic.xips.repositories.UserRepository;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -78,10 +81,29 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
+    @Override
+    public Optional<User> findUserById(UUID id) {
+        return userRepository.findById(id);
+    }
+
 
     @Override
     public void deleteByUsername(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found: "+username));
         userRepository.delete(user);
     }
+
+    @Override
+    public void deleteById(UUID id) {
+        userRepository.deleteById(id);
+    }
+
+    @Override
+    public void setRating(Rating rating) {
+        User user = rating.getUser();
+        user.getRatings().add(rating);
+        userRepository.save(rating.getUser());
+    }
+
+
 }
