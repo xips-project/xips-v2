@@ -32,6 +32,7 @@ jobs:
                 org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
                 -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
                 -Dsonar.organization=xips-project \
+                -Dsonar.projectKey=xips-v2
                 --file pom.xml -B --no-transfer-progress
         env:
           SONAR_TOKEN: ${{ secrets.SonarCloudToken }}
