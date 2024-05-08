@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre-alpine
+FROM bellsoft/liberica-openjdk-alpine:17.0.11-10
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} app.jar
 EXPOSE 8080
