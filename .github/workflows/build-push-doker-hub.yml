@@ -19,10 +19,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-      - name: run sonar
-        run: mvn clean verify sonar:sonar -Pcoverage -Dsonar.token=99ca41e7cdcf8d690af802b3917bbe26f2c716d8 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=xips-project -Dsonar.projectKey=xips-v2
-      - name: Build with Maven
-        run: mvn package
+      - name: build and run sonar
+        run: mvn package verify sonar:sonar -Pcoverage -Dsonar.token=99ca41e7cdcf8d690af802b3917bbe26f2c716d8 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=xips-project -Dsonar.projectKey=xips-v2
+
 
       - name: Retrieve version
         id: version
