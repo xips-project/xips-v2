@@ -48,4 +48,6 @@ public class UserCreationRequest {
     private String zipCode;
 
     private String country;
+
+
 }
