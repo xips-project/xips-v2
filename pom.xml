@@ -10,7 +10,7 @@
 	</parent>
 	<profiles>
 		<profile>
-			<id>defaultProfile</id>
+			<id>coverage</id>
 			<build>
 				<plugins>
 					<plugin>
@@ -132,6 +132,22 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>3.10.0.2594</version>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.11</version>
+			</plugin>
+
 		</plugins>
 	</build>
 
