@@ -32,10 +32,10 @@ jobs:
                 org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
                 -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
                 -Dsonar.organization=xips-project \
-                -Dsonar.projectKey=xips-v2
+                -Dsonar.projectKey=xips-v2 \
                 --file pom.xml -B --no-transfer-progress
         env:
-          SONAR_TOKEN: ${{ secrets.SonarCloudToken }}
+          SONAR_TOKEN: 99ca41e7cdcf8d690af802b3917bbe26f2c716d8
           SONAR_HOST_URL: https://sonarcloud.io
 
       # Check the Quality Gate status.
