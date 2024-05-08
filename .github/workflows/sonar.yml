@@ -51,6 +51,7 @@ jobs:
         with:
           scanMetadataReportFile: target/sonar/report-task.txt
 
+
       # Optionally you can use the output from the Quality Gate in another step.
       # The possible outputs of the `quality-gate-status` variable are `PASSED`, `WARN` or `FAILED`.
       - name: "Example show SonarQube Quality Gate Status value"
