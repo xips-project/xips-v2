@@ -43,5 +43,5 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/fct-finder:latest
-            ${{ secrets.DOCKER_USERNAME }}/fct-finder:${{ steps.version.outputs.TAG_NAME }}
+            ${{ secrets.DOCKER_USERNAME }}/xips-v2:latest
+            ${{ secrets.DOCKER_USERNAME }}/xips-v2:${{ steps.version.outputs.TAG_NAME }}
