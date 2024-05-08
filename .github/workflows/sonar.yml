@@ -12,9 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
         with:
-          # Disabling shallow clone is recommended for improving relevancy of reporting.
-          fetch-depth: 0
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
 
       # Triggering SonarQube analysis as results of it are required by Quality Gate check.
       - name: SonarQube Scan
