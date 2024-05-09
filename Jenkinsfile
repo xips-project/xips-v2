@@ -71,7 +71,9 @@ pipeline {
         stage('Set up Docker Buildx') {
             steps {
                 script {
-                    sh 'docker buildx create --use'
+                docker context create foo
+                docker buildx create --use foo
+                    sh 'context create context &&  docker buildx create --user context && docker buildx create --use'
                 }
             }
         }
