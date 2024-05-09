@@ -57,6 +57,19 @@ pipeline {
             }
         }
 
+        stage('Create Docker Context') {
+            steps {
+                sh 'docker context create my-context'
+            }
+        }
+
+        stage('Set Docker Context') {
+            steps {
+               sh 'docker context use my-context'
+            }
+        }
+
+
         stage('Login to Docker Hub') {
             steps {
                 withCredentials([
@@ -71,9 +84,7 @@ pipeline {
         stage('Set up Docker Buildx') {
             steps {
                 script {
-                docker context create foo
-                docker buildx create --use foo
-                    sh 'context create context &&  docker buildx create --user context && docker buildx create --use'
+                    sh 'docker buildx create --use'
                 }
             }
         }
