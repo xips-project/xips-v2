@@ -42,6 +42,10 @@ pipeline {
                                             -f ${scanMetadataReportFile}
                                         """
                                     }
+
+                                    if (qualityGateStatus != 'OK') {
+                                                                error "Quality gate check failed. Halting the pipeline."
+                                                            }
                                 }
                             }
                         }
