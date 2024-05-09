@@ -90,7 +90,7 @@ pipeline {
         stage('Set up Docker Buildx') {
             steps {
                 script {
-                    sh 'docker buildx create --use'
+                    sh 'docker buildx create --use my-context'
                 }
             }
         }
