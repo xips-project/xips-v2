@@ -109,7 +109,6 @@ pipeline {
             }
         }
 
-
     }
 
      post {
@@ -118,4 +117,5 @@ pipeline {
                 junit 'target/surefire-reports/*.xml'
             }
         }
+
 }
