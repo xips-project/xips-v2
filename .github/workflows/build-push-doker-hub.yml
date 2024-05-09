@@ -23,6 +23,21 @@ jobs:
       - name: build and run sonar
         run: mvn verify sonar:sonar -Pcoverage -Dsonar.token=99ca41e7cdcf8d690af802b3917bbe26f2c716d8 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=xips-project -Dsonar.projectKey=xips-v2
 
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
+        uses: SonarSource/sonarqube-quality-gate-action@v1.1.0
+        # Force to fail step after specific time.
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: 99ca41e7cdcf8d690af802b3917bbe26f2c716d8
+          SONAR_HOST_URL: https://sonarcloud.io
+        with:
+          scanMetadataReportFile: target/sonar/report-task.txt
+      # Optionally you can use the output from the Quality Gate in another step.
+      # The possible outputs of the `quality-gate-status` variable are `PASSED`, `WARN` or `FAILED`.
+      - name: "Example show SonarQube Quality Gate Status value"
+        run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
+
 
       - name: Retrieve version
         id: version
@@ -47,19 +62,3 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/xips-v2:latest
             ${{ secrets.DOCKER_USERNAME }}/xips-v2:${{ steps.version.outputs.TAG_NAME }}
-
-      # Check the Quality Gate status.
-      - name: SonarQube Quality Gate check
-        id: sonarqube-quality-gate-check
-        uses: SonarSource/sonarqube-quality-gate-action@v1.1.0
-        # Force to fail step after specific time.
-        timeout-minutes: 5
-        env:
-          SONAR_TOKEN: 99ca41e7cdcf8d690af802b3917bbe26f2c716d8
-          SONAR_HOST_URL: https://sonarcloud.io
-        with:
-          scanMetadataReportFile: target/sonar/report-task.txt
-      # Optionally you can use the output from the Quality Gate in another step.
-      # The possible outputs of the `quality-gate-status` variable are `PASSED`, `WARN` or `FAILED`.
-      - name: "Example show SonarQube Quality Gate Status value"
-        run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
