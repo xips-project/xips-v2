@@ -14,7 +14,7 @@ pipeline {
         stage('Set up JDK 17') {
             steps {
                 script {
-                    sh echo 'hello java'
+                    sh ' echo "hello java"'
                 }
             }
         }
