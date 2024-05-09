@@ -28,6 +28,26 @@ pipeline {
             }
         }
 
+        stage('SonarQube Quality Gate check') {
+                    steps {
+                        timeout(time: 5, unit: 'MINUTES') {
+                            withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
+                                withCredentials([string(credentialsId: 'SONAR_HOST_URL', variable: 'SONAR_HOST_URL')]) {
+                                    script {
+                                        def scanMetadataReportFile = readFile('target/sonar/report-task.txt').trim()
+                                        sh """
+                                            curl -sSfL https://raw.githubusercontent.com/SonarSource/sonarqube-quality-gate-action/master/sonarqube.sh | bash -s -- \
+                                            -t ${SONAR_TOKEN} \
+                                            -u ${SONAR_HOST_URL} \
+                                            -f ${scanMetadataReportFile}
+                                        """
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
         stage('Retrieve version') {
             steps {
                 script {
