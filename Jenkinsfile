@@ -22,21 +22,29 @@ pipeline {
             steps {
                 script {
                     tool 'maven'
-                    withSonarQubeEnv('sonar'){
-                       sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn verify sonar:sonar -Pcoverage -Dsonar.token=99ca41e7cdcf8d690af802b3917bbe26f2c716d8 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=xips-project -Dsonar.projectKey=xips-v2'
-
-                    }
+                    sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn verify sonar:sonar -Pcoverage -Dsonar.token=99ca41e7cdcf8d690af802b3917bbe26f2c716d8 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=xips-project -Dsonar.projectKey=xips-v2'
 
                 }
             }
         }
 
-        stage("Quality gate") {
+        stage('SonarQube Quality Gate check') {
                     steps {
-                        withSonarQubeEnv('sonar'){
-                            waitForQualityGate abortPipeline: true
+                        timeout(time: 5, unit: 'MINUTES') {
+                            withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
+                                withCredentials([string(credentialsId: 'SONAR_HOST_URL', variable: 'SONAR_HOST_URL')]) {
+                                    script {
+                                        def scanMetadataReportFile = readFile('target/sonar/report-task.txt').trim()
+                                        sh """
+                                            curl -sSfL https://raw.githubusercontent.com/SonarSource/sonarqube-quality-gate-action/master/sonarqube.sh | bash -s -- \
+                                            -t ${SONAR_TOKEN} \
+                                            -u ${SONAR_HOST_URL} \
+                                            -f ${scanMetadataReportFile}
+                                        """
+                                    }
+                                }
+                            }
                         }
-
                     }
                 }
 
