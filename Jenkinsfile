@@ -40,12 +40,14 @@ pipeline {
                                             -t ${SONAR_TOKEN} \
                                             -u ${SONAR_HOST_URL} \
                                             -f ${scanMetadataReportFile}
-                                        """
-                                    }
+                                        """,
+                                                                    returnStatus: true
+                                                                )
+                                                                if (qualityGateResult != 0) {
+                                                                    error('Quality Gate check failed. Pipeline halted.')
+                                                                }
 
-                                    if (qualityGateStatus != 'OK') {
-                                                                error "Quality gate check failed. Halting the pipeline."
-                                                            }
+
                                 }
                             }
                         }
