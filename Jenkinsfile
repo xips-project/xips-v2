@@ -56,15 +56,18 @@ pipeline {
                 }
             }
         }
+
         stage('Login to Docker Hub') {
             steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'DOCKER_TOKEN', passwordVariable: 'DOCKER_TOKEN', usernameVariable: 'DOCKER_USERNAME')]) {
-                        sh "docker login -u $DOCKER_USERNAME -p $DOCKER_TOKEN"
-                    }
+                withCredentials([
+                    string(credentialsId: 'DOCKER_USERNAME', variable: 'DOCKER_USERNAME'),
+                    string(credentialsId: 'DOCKER_TOKEN', variable: 'DOCKER_TOKEN')
+                ]) {
+                    sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_TOKEN}"
                 }
             }
         }
+
         stage('Set up Docker Buildx') {
             steps {
                 script {
