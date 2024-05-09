@@ -33,7 +33,10 @@ pipeline {
 
         stage("Quality gate") {
                     steps {
-                        waitForQualityGate abortPipeline: true
+                        withSonarQubeEnv('sonar'){
+                            waitForQualityGate abortPipeline: true
+                        }
+
                     }
                 }
 
