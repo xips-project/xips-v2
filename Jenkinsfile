@@ -57,6 +57,12 @@ pipeline {
             }
         }
 
+        stage('Remove Docker Context') {
+                    steps {
+                        sh 'docker context rm -f my-context'
+                    }
+                }
+
         stage('Create Docker Context') {
             steps {
                 sh 'docker context create my-context'
@@ -88,6 +94,8 @@ pipeline {
                 }
             }
         }
+
+
         stage('Build and push') {
             steps {
                 script {
