@@ -34,6 +34,7 @@ jobs:
                 -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
                 -Dsonar.organization=xips-project \
                 -Dsonar.projectKey=xips-v2 \
+                -Dsonar.qualitygate.wait=true \
                 --file pom.xml -B --no-transfer-progress
         env:
           SONAR_TOKEN: 99ca41e7cdcf8d690af802b3917bbe26f2c716d8
