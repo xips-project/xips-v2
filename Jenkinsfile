@@ -28,29 +28,11 @@ pipeline {
             }
         }
 
-        stage('Check SonarQube Quality Gate') {
-            steps {
-                script {
-                    // Wait for the SonarQube task to complete
-                    sleep 60
-
-                    // Get the analysisId from the report-task.txt file
-                    def reportTask = readFile('target/sonar/report-task.txt').trim().split('\n').collectEntries { line ->
-                        def (key, value) = line.split('=')
-                        [(key): value]
-                    }
-                    def analysisId = reportTask['ceTaskId']
-
-                    // Call the SonarQube Web API to get the Quality Gate status
-                    def qualityGateStatus = sh(script: "curl -s -u ${SONAR_TOKEN}: https://sonarcloud.io/api/qualitygates/project_status?analysisId=${analysisId} | jq -r .projectStatus.status", returnStdout: true).trim()
-
-                    // Fail the build if the Quality Gate is not passed
-                    if (qualityGateStatus != 'OK') {
-                        error("SonarQube Quality Gate not passed: ${qualityGateStatus}")
+        stage('Quality Gate Check') {
+                    steps {
+                        waitForQualityGate abortPipeline: true
                     }
                 }
-            }
-        }
 
 
 
