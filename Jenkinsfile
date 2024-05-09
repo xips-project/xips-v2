@@ -101,10 +101,20 @@ pipeline {
         stage('Build and push') {
             steps {
                 script {
-                    def dockerTag = "${DOCKER_USERNAME}/xips-v2"
-                    def latestTag = "${dockerTag}:latest"
-                    def versionTag = "${dockerTag}:${version}"
-                    sh "docker buildx build --push --tag $latestTag --tag $versionTag ."
+                     def dockerTag = "${DOCKER_USERNAME}/xips-v2"
+                                def versionTag = "${dockerTag}:${version}"
+                                def branchName = env.BRANCH_NAME // Get the name of the current branch
+                                def prNumber = env.CHANGE_ID // Get the pull request number
+
+                                // Include branch name or pull request number in the image tag
+                                if (prNumber != null && prNumber != '') {
+                                    dockerTag += "-PR-${prNumber}"
+                                } else {
+                                    dockerTag += "-${branchName}"
+                                }
+
+                                def latestTag = "${dockerTag}:latest"
+                                sh "docker buildx build --push --tag ${latestTag} --tag ${versionTag} ."
                 }
             }
         }
