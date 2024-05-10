@@ -12,30 +12,21 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn verify'
-           }
-        }
-
-        stage('Sonar Scan') {
+        stage('Build and run Sonar') {
             steps {
                 withSonarQubeEnv('sonarcloud') {
-                    sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn sonar:sonar -Pcoverage -Dsonar.token=99ca41e7cdcf8d690af802b3917bbe26f2c716d8 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=xips-project -Dsonar.projectKey=xips-v2'
+                    sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn verify sonar:sonar -Pcoverage -Dsonar.token=99ca41e7cdcf8d690af802b3917bbe26f2c716d8 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=xips-project -Dsonar.projectKey=xips-v2'
 
                 }
-
             }
         }
 
-        stage("Quality Gate"){
-          timeout(time: 1, unit: 'HOURS') { // Just in case something goes wrong, pipeline will be killed after a timeout
-            def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
-            if (qg.status != 'OK') {
-              error "Pipeline aborted due to quality gate failure: ${qg.status}"
+        stage("Quality Gate 2") {
+            steps {
+              waitForQualityGate abortPipeline: true
             }
-          }
         }
+
 
 
 
