@@ -15,12 +15,21 @@ pipeline {
         stage('Build and run Sonar') {
             steps {
                 withSonarQubeEnv('sonarcloud') {
-                    sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn verify sonar:sonar -Pcoverage -Dsonar.token=99ca41e7cdcf8d690af802b3917bbe26f2c716d8 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=xips-project -Dsonar.projectKey=xips-v2'
+                    sh 'mvn verify sonar:sonar -Pcoverage -Dsonar.token=99ca41e7cdcf8d690af802b3917bbe26f2c716d8 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=xips-project -Dsonar.projectKey=xips-v2'
 
                 }
             }
         }
 
+        stage("Quality Gate") {
+                    steps {
+                        timeout(time: 1, unit: 'HOURS') {
+                            // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
+                            // true = set pipeline to UNSTABLE, false = don't
+                            waitForQualityGate abortPipeline: true
+                        }
+                    }
+                }
 
 
         stage('Retrieve version') {
