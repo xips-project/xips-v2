@@ -22,20 +22,20 @@ pipeline {
             steps {
                 withSonarQubeEnv('sonarcloud') {
                     sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn sonar:sonar -Pcoverage -Dsonar.token=99ca41e7cdcf8d690af802b3917bbe26f2c716d8 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=xips-project -Dsonar.projectKey=xips-v2'
+
                 }
+
             }
         }
 
-        stage("Quality Gate") {
-                    steps {
-                        sleep 180
-                        timeout(time: 1, unit: 'HOURS') {
-                            // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
-                            // true = set pipeline to UNSTABLE, false = don't
-                            waitForQualityGate abortPipeline: true
-                        }
-                    }
-                }
+        stage("Quality Gate"){
+          timeout(time: 1, unit: 'HOURS') { // Just in case something goes wrong, pipeline will be killed after a timeout
+            def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
+            if (qg.status != 'OK') {
+              error "Pipeline aborted due to quality gate failure: ${qg.status}"
+            }
+          }
+        }
 
 
 
@@ -49,17 +49,23 @@ pipeline {
         }
 
         stage('Remove Docker Context') {
-            steps {
-                script {
-                    def contextExists = sh(script: 'docker context inspect my-context >/dev/null 2>&1', returnStatus: true)
-                    if (contextExists != 0) {
-                        sh 'docker context create my-context'
-
+                    steps {
+                        sh 'docker context rm -f my-context'
                     }
-                    sh 'docker context use my-context'
                 }
+
+        stage('Create Docker Context') {
+            steps {
+                sh 'docker context create my-context'
             }
         }
+
+        stage('Set Docker Context') {
+            steps {
+               sh 'docker context use my-context'
+            }
+        }
+
 
         stage('Login to Docker Hub') {
             steps {
