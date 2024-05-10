@@ -12,21 +12,43 @@ pipeline {
             }
         }
 
-        stage('Build and run Sonar') {
+        stage('Build') {
+            steps {
+                sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn verify'
+           }
+        }
+
+        stage('Sonar Scan') {
             steps {
                 withSonarQubeEnv('sonarcloud') {
-                    sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn verify sonar:sonar -Pcoverage -Dsonar.token=99ca41e7cdcf8d690af802b3917bbe26f2c716d8 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=xips-project -Dsonar.projectKey=xips-v2'
-
+                    sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn sonar:sonar -Pcoverage -Dsonar.token=99ca41e7cdcf8d690af802b3917bbe26f2c716d8 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=xips-project -Dsonar.projectKey=xips-v2'
                 }
             }
         }
 
-        stage("Quality Gate 2") {
-            steps {
-              waitForQualityGate abortPipeline: true
-            }
-        }
+       stage("Quality Gate") {
+           steps {
+               script {
+                   def qualityGateStatus = ''
+                   def timeoutMinutes = 30 // Adjust the timeout as needed
 
+                   echo "Polling SonarQube for Quality Gate status..."
+                   timeout(time: timeoutMinutes, unit: 'MINUTES') {
+                       while (qualityGateStatus != 'IN_PROGRESS') {
+                           qualityGateStatus = sh(script: "curl -s -u ${SONAR_TOKEN}: https://sonarcloud.io/api/qualitygates/project_status?projectKey=xips-v2", returnStdout: true).trim()
+                           if (qualityGateStatus.contains('projectStatus":{"status":"OK"')) {
+                               echo "Quality Gate passed!"
+                               break
+                           } else if (qualityGateStatus.contains('projectStatus":{"status":"ERROR"')) {
+                               error "Quality Gate failed!"
+                           } else {
+                               echo "Quality Gate is still in progress. Waiting..."
+                           }
+                       }
+                   }
+               }
+           }
+       }
 
 
 
@@ -39,24 +61,18 @@ pipeline {
             }
         }
 
-        stage('Remove Docker Context') {
-                    steps {
-                        sh 'docker context rm -f my-context'
+        stage('Setup Docker Context') {
+            steps {
+                script {
+                    def contextExists = sh(script: 'docker context inspect my-context >/dev/null 2>&1', returnStatus: true)
+                    if (contextExists != 0) {
+                        sh 'docker context create my-context'
+
                     }
+                    sh 'docker context use my-context'
                 }
-
-        stage('Create Docker Context') {
-            steps {
-                sh 'docker context create my-context'
             }
         }
-
-        stage('Set Docker Context') {
-            steps {
-               sh 'docker context use my-context'
-            }
-        }
-
 
         stage('Login to Docker Hub') {
             steps {
@@ -76,7 +92,6 @@ pipeline {
                 }
             }
         }
-
 
         stage('Build and push') {
             steps {
