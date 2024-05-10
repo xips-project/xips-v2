@@ -26,31 +26,16 @@ pipeline {
             }
         }
 
-       stage("Quality Gate") {
-           steps {
-               script {
-                   def qualityGateStatus = ''
-                   def timeoutMinutes = 30 // Adjust the timeout as needed
-
-                   echo "Polling SonarQube for Quality Gate status..."
-                   timeout(time: timeoutMinutes, unit: 'MINUTES') {
-                       while (qualityGateStatus != 'IN_PROGRESS') {
-                           qualityGateStatus = sh(script: "curl -s -u ${SONAR_TOKEN}: https://sonarcloud.io/api/qualitygates/project_status?projectKey=xips-v2", returnStdout: true).trim()
-                           if (qualityGateStatus.contains('projectStatus":{"status":"OK"')) {
-                               echo "Quality Gate passed!"
-                               break
-                           } else if (qualityGateStatus.contains('projectStatus":{"status":"ERROR"')) {
-                               error "Quality Gate failed!"
-                           } else {
-                               echo "Quality Gate is still in progress. Waiting..."
-
-                           }
-
-                       }
-                   }
-               }
-           }
-       }
+        stage("Quality Gate") {
+                    steps {
+                        sleep 180
+                        timeout(time: 1, unit: 'HOURS') {
+                            // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
+                            // true = set pipeline to UNSTABLE, false = don't
+                            waitForQualityGate abortPipeline: true
+                        }
+                    }
+                }
 
 
 
@@ -63,7 +48,7 @@ pipeline {
             }
         }
 
-        stage('Setup Docker Context') {
+        stage('Remove Docker Context') {
             steps {
                 script {
                     def contextExists = sh(script: 'docker context inspect my-context >/dev/null 2>&1', returnStatus: true)
@@ -94,6 +79,7 @@ pipeline {
                 }
             }
         }
+
 
         stage('Build and push') {
             steps {
