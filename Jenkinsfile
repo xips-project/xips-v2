@@ -26,7 +26,7 @@ pipeline {
             }
         }
 
-       stage("Quality Gate") {
+       stage("Quality Gate Check") {
            steps {
                script {
                    def qualityGateStatus = ''
@@ -50,16 +50,6 @@ pipeline {
            }
        }
 
-
-
-        stage('Retrieve version') {
-            steps {
-                script {
-                    version = sh(script: '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true).trim()
-                    writeFile file: "${env.WORKSPACE}/TAG_NAME", text: "TAG_NAME=${version}"
-                }
-            }
-        }
 
         stage('Setup Docker Context') {
             steps {
