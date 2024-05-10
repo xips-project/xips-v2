@@ -34,7 +34,6 @@ pipeline {
 
                    echo "Polling SonarQube for Quality Gate status..."
                    timeout(time: timeoutMinutes, unit: 'MINUTES') {
-                       // Keep polling until the quality gate status is not in progress
                        while (qualityGateStatus != 'IN_PROGRESS') {
                            qualityGateStatus = sh(script: "curl -s -u ${SONAR_TOKEN}: https://sonarcloud.io/api/qualitygates/project_status?projectKey=xips-v2", returnStdout: true).trim()
                            if (qualityGateStatus.contains('projectStatus":{"status":"OK"')) {
@@ -44,7 +43,7 @@ pipeline {
                                error "Quality Gate failed!"
                            } else {
                                echo "Quality Gate is still in progress. Waiting..."
-                               // No polling interval
+
                            }
 
                        }
