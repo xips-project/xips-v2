@@ -36,7 +36,7 @@ pipeline {
                    timeout(time: timeoutMinutes, unit: 'MINUTES') {
                        // Keep polling until the quality gate status is not in progress
                        while (qualityGateStatus != 'IN_PROGRESS') {
-                           qualityGateStatus = sh(script: "curl -s -u ${SONAR_TOKEN}: ${SONAR_HOST}/api/qualitygates/project_status?projectKey=xips-v2", returnStdout: true).trim()
+                           qualityGateStatus = sh(script: "curl -s -u ${SONAR_TOKEN}: https://sonarcloud.io/api/qualitygates/project_status?projectKey=xips-v2", returnStdout: true).trim()
                            if (qualityGateStatus.contains('"status":"OK"')) {
                                echo "Quality Gate passed!"
                                break
