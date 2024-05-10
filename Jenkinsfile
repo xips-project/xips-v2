@@ -26,16 +26,31 @@ pipeline {
             }
         }
 
-        stage("Quality Gate") {
-                    steps {
-                        sleep 180
-                        timeout(time: 1, unit: 'HOURS') {
-                            // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
-                            // true = set pipeline to UNSTABLE, false = don't
-                            waitForQualityGate abortPipeline: true
-                        }
-                    }
-                }
+       stage("Quality Gate") {
+           steps {
+               script {
+                   def qualityGateStatus = ''
+                   def timeoutMinutes = 30 // Adjust the timeout as needed
+
+                   echo "Polling SonarQube for Quality Gate status..."
+                   timeout(time: timeoutMinutes, unit: 'MINUTES') {
+                       // Keep polling until the quality gate status is not in progress
+                       while (qualityGateStatus != 'IN_PROGRESS') {
+                           qualityGateStatus = sh(script: "curl -s -u ${SONAR_TOKEN}: ${SONAR_HOST}/api/qualitygates/project_status?projectKey=xips-v2", returnStdout: true).trim()
+                           if (qualityGateStatus.contains('"status":"OK"')) {
+                               echo "Quality Gate passed!"
+                               break
+                           } else if (qualityGateStatus.contains('"status":"ERROR"')) {
+                               error "Quality Gate failed!"
+                           } else {
+                               echo "Quality Gate is still in progress. Waiting..."
+                               // No polling interval
+                           }
+                       }
+                   }
+               }
+           }
+       }
 
 
 
