@@ -37,10 +37,10 @@ pipeline {
                        // Keep polling until the quality gate status is not in progress
                        while (qualityGateStatus != 'IN_PROGRESS') {
                            qualityGateStatus = sh(script: "curl -s -u ${SONAR_TOKEN}: https://sonarcloud.io/api/qualitygates/project_status?projectKey=xips-v2", returnStdout: true).trim()
-                           if (qualityGateStatus.contains('"status":"OK"')) {
+                           if (qualityGateStatus.contains('projectStatus":{"status":"OK"')) {
                                echo "Quality Gate passed!"
                                break
-                           } else if (qualityGateStatus.contains('"status":"ERROR"')) {
+                           } else if (qualityGateStatus.contains('projectStatus":{"status":"ERROR"')) {
                                error "Quality Gate failed!"
                            } else {
                                echo "Quality Gate is still in progress. Waiting..."
@@ -64,7 +64,7 @@ pipeline {
             }
         }
 
-        stage('Remove Docker Context') {
+        stage('Setup Docker Context') {
             steps {
                 script {
                     def contextExists = sh(script: 'docker context inspect my-context >/dev/null 2>&1', returnStatus: true)
@@ -95,7 +95,6 @@ pipeline {
                 }
             }
         }
-
 
         stage('Build and push') {
             steps {
