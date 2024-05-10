@@ -46,6 +46,7 @@ pipeline {
                                echo "Quality Gate is still in progress. Waiting..."
                                // No polling interval
                            }
+
                        }
                    }
                }
