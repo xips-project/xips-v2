@@ -62,7 +62,7 @@ public class UserControllerTest {
     private static List<User> users;
 
 
-    public static SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor jwtRequestPostProcessor() {
+    static SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor jwtRequestPostProcessor() {
 
         return jwt().jwt(jwt -> jwt.claims(claims -> {
 

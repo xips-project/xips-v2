@@ -52,7 +52,7 @@ class ProductControllerTest {
     private static List<Product> products;
 
     // TODO -> needs some work
-    public static SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor jwtRequestPostProcessor() {
+    static SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor jwtRequestPostProcessor() {
 
         return jwt().jwt(jwt -> jwt.claims(claims -> {
 
@@ -84,7 +84,7 @@ class ProductControllerTest {
 
 
     @Test
-    public void shouldGetNoProducts() throws Exception {
+    void shouldGetNoProducts() throws Exception {
         given(productService.findAll()).willReturn(new ArrayList<>());
 
         mockMvc.perform(get(basePath)
@@ -97,7 +97,7 @@ class ProductControllerTest {
 
 
     @Test
-    public void shouldGetTwoProducts() throws Exception {
+    void shouldGetTwoProducts() throws Exception {
         given(productService.findAll()).willReturn(products);
 
         mockMvc.perform(get(basePath)
