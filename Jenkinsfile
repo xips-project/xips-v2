@@ -20,7 +20,8 @@ pipeline {
 
         stage('PIT Mutation') {
             steps {
-                pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+                sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn -DwithHistory test-compile org.pitest:pitest-maven:mutationCoverage'
+
             }
         }
 
@@ -125,7 +126,9 @@ pipeline {
      post {
         always {
             archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
-                junit 'target/surefire-reports/*.xml'
+            junit 'target/surefire-reports/*.xml'
+            pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+
             }
         }
 }
