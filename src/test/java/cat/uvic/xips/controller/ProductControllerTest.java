@@ -108,14 +108,6 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$", hasSize(2)));
     }
 
-    // TODO
-    @Test
-    void getProductsAndRatingsByUsername() throws Exception {
-
-        MvcResult mvcResult = mockMvc.perform(get(basePath + "/list/user/afcasco")).andReturn();
-
-        System.out.println(mvcResult.getResponse().getContentAsString());
-    }
 
     @Test
     void shouldReturnOneProductOfTypeBook() throws Exception {
