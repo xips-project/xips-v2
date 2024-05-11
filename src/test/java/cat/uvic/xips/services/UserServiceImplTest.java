@@ -6,12 +6,17 @@ import cat.uvic.xips.entities.Rating;
 import cat.uvic.xips.entities.User;
 import cat.uvic.xips.repositories.UserRepository;
 import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,6 +37,32 @@ class UserServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         userService = new UserServiceImpl(userRepository);
+    }
+
+    @Test
+    void testCreateUserInOkta() throws IOException {
+        UserServiceImpl userService = new UserServiceImpl(userRepository);
+
+        UserCreationRequest userCreationRequest = new UserCreationRequest();
+        userCreationRequest.setFirstName("Test");
+        userCreationRequest.setLastName("User");
+        userCreationRequest.setEmail("testuser@gmail.com");
+        userCreationRequest.setPassword("password");
+
+        Response response = new Response.Builder()
+                .request(new Request.Builder().url("http://localhost").build())
+                .protocol(Protocol.HTTP_1_1)
+                .code(200)
+                .message("OK")
+                .build();
+
+        UserServiceImpl userServiceSpy = Mockito.spy(userService);
+        doReturn(response).when(userServiceSpy).createUserInOkta(userCreationRequest);
+
+        Response result = userServiceSpy.createUserInOkta(userCreationRequest);
+
+        assertEquals(200, result.code());
+        assertEquals("OK", result.message());
     }
 
     @Test
