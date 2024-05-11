@@ -31,10 +31,10 @@ public class ProductController {
         return productService.findById(id);
     }
 
-    @GetMapping("/type/{productType}")
+    /*@GetMapping("/type/{productType}")
     public List<Product> findAllByProductType(@PathVariable ProductType productType){
         return productService.findAllByProductType(productType);
-    }
+    }*/
 
     @PostMapping
     public void createProduct(@RequestBody Product product) {
