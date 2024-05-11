@@ -1,4 +1,4 @@
-package cat.uvic.xips.controllers;
+package cat.uvic.xips.controller;
 
 import cat.uvic.xips.controller.UserController;
 import cat.uvic.xips.dto.UserCreationRequest;

@@ -1,6 +1,7 @@
 package cat.uvic.xips.services;
 
 import cat.uvic.xips.entities.Product;
+import cat.uvic.xips.entities.ProductType;
 import cat.uvic.xips.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,8 @@ public class ProductServiceImpl implements ProductService{
         return productRepository.findById(id);
     }
 
+
+
     @Override
     public void save(Product product) {
         productRepository.save(product);
@@ -34,6 +37,11 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public void remove(UUID id) {
         productRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Product> findAllByProductType(ProductType productType) {
+        return productRepository.findAllByProductType(productType);
     }
 
 

@@ -1,6 +1,7 @@
 package cat.uvic.xips.services;
 
 import cat.uvic.xips.entities.Product;
+import cat.uvic.xips.entities.ProductType;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,5 +16,9 @@ public interface ProductService {
     public void save(Product product);
 
     public void remove(UUID id);
+
+    public List<Product> findAllByProductType(ProductType productType);
+
+
 
 }

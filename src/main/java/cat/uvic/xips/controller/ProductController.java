@@ -1,6 +1,7 @@
 package cat.uvic.xips.controller;
 
 import cat.uvic.xips.entities.Product;
+import cat.uvic.xips.entities.ProductType;
 import cat.uvic.xips.services.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,11 @@ public class ProductController {
     @GetMapping("/{id}")
     public Optional<Product> findById(@PathVariable UUID id) {
         return productService.findById(id);
+    }
+
+    @GetMapping("/type/{productType}")
+    public List<Product> findAllByProductType(@PathVariable ProductType productType){
+        return productService.findAllByProductType(productType);
     }
 
     @PostMapping
