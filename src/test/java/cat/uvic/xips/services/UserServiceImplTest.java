@@ -109,9 +109,7 @@ class UserServiceImplTest {
     @Test
     void saveUpdatesExistingUser() {
         UserCreationRequest request = new UserCreationRequest();
-        // set request fields...
         User existingUser = new User();
-        // set existingUser fields...
         when(userRepository.save(any(User.class))).thenReturn(existingUser);
 
         userService.save(request);
@@ -138,9 +136,7 @@ class UserServiceImplTest {
     @Test
     void setRatingAddsRatingToUser() {
         Rating rating = new Rating();
-        // set rating fields...
         User user = new User();
-        // set user fields...
         rating.setUser(user);
         when(userRepository.save(user)).thenReturn(user);
 
