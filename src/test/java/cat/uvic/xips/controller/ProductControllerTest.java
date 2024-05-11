@@ -119,7 +119,6 @@ class ProductControllerTest {
         System.out.println(mvcResult.getResponse().getContentAsString());
     }
 
-/*
     @Test
     void shouldReturnOneProductOfTypeBook() throws Exception {
 
@@ -132,7 +131,6 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
     }
-*/
 
 
 
