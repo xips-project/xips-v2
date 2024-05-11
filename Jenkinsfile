@@ -20,14 +20,13 @@ pipeline {
 
         stage('PIT Mutation') {
             steps {
-                sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn -DwithHistory org.pitest:pitest-maven:mutationCoverage'
+                sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn -DwithHistory test-compile org.pitest:pitest-maven:mutationCoverage'
                 sh 'ls -l target/pit-reports' // Add this line
-                sh 'cat target/pit-reports/mutations.xml'
                 pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: 'target/pit-reports/mutations.xml'
 
             }
         }
-/*
+
         stage('Sonar Scan') {
             steps {
                 withSonarQubeEnv('sonarcloud') {
@@ -128,12 +127,11 @@ pipeline {
 
      post {
         always {
-            archiveArtifacts artifacts: 'target *//*.jar', fingerprint: true
-            junit 'target/surefire-reports *//*.xml'
+            archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+            junit 'target/surefire-reports/*.xml'
             // Not creating reports correctly
-           // pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: '/var/jenkins_home/workspace/xips-v2/target/pit-reports *//**//* mutations.xml'
+           // pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: '/var/jenkins_home/workspace/xips-v2/target/pit-reports/**/mutations.xml'
 
-            }*/
+            }
         }
-
 }
