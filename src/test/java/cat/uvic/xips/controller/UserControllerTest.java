@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(UserController.class)
 @Import({SecurityConfig.class, ApplicationConfig.class})
-public class UserControllerTest {
+class UserControllerTest {
 
     @MockBean
     UserRepository userRepository;
