@@ -37,7 +37,7 @@ public class CustomExceptionController {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<?> handleAccessDenied(HttpServletRequest request, AccessDeniedException ex) {
+    public ResponseEntity<ErrorResponse> handleAccessDenied(HttpServletRequest request, AccessDeniedException ex) {
         ErrorResponse response = new ErrorResponse();
         response.setBackendMessage(ex.getLocalizedMessage());
         response.setUrl(request.getRequestURL().toString());
