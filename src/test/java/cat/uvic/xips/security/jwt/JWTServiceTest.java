@@ -15,26 +15,26 @@ class JWTServiceTest {
     private UserDetails mockUserDetails;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         jwtService = new JWTService();
         mockUserDetails = new User("testUser", "testPassword", Collections.emptyList());
     }
 
     @Test
-    public void testGetToken() {
+    void testGetToken() {
         String token = jwtService.getToken(mockUserDetails);
         assertNotNull(token);
     }
 
     @Test
-    public void testGetUsernameFromToken() {
+    void testGetUsernameFromToken() {
         String token = jwtService.getToken(mockUserDetails);
         String username = jwtService.getUsernameFromToken(token);
         assertEquals("testUser", username);
     }
 
     @Test
-    public void testIsTokenValid() {
+    void testIsTokenValid() {
         String token = jwtService.getToken(mockUserDetails);
         boolean isValid = jwtService.isTokenValid(token, mockUserDetails);
         assertTrue(isValid);

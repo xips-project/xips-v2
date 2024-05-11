@@ -5,7 +5,6 @@ import cat.uvic.xips.dto.UserCreationRequest;
 import cat.uvic.xips.entities.Rating;
 import cat.uvic.xips.entities.User;
 import cat.uvic.xips.repositories.UserRepository;
-import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -16,7 +15,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,9 +26,6 @@ class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private OkHttpClient client;
-
     private UserServiceImpl userService;
 
     @BeforeEach
@@ -40,7 +35,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testCreateUserInOkta() throws IOException {
+    void testCreateUserInOkta()  {
         UserServiceImpl userService = new UserServiceImpl(userRepository);
 
         UserCreationRequest userCreationRequest = new UserCreationRequest();

@@ -34,7 +34,7 @@ class JWTAuthenticationFilterTest {
     private FilterChain mockFilterChain;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
         jwtService = new JWTService();
         mockUserDetails = new User("testUser", "testPassword", Collections.emptyList());
@@ -42,7 +42,7 @@ class JWTAuthenticationFilterTest {
     }
 
     @Test
-    public void testDoFilterInternal() throws ServletException, IOException {
+    void testDoFilterInternal() throws ServletException, IOException {
         when(mockRequest.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer " + jwtService.getToken(mockUserDetails));
 
         jwtAuthenticationFilter.doFilterInternal(mockRequest, mockResponse, mockFilterChain);
@@ -51,7 +51,7 @@ class JWTAuthenticationFilterTest {
     }
 
     @Test
-    public void testGetTokenFromRequest() {
+    void testGetTokenFromRequest() {
         when(mockRequest.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn("Bearer " + jwtService.getToken(mockUserDetails));
 
         String token = jwtAuthenticationFilter.getTokenFromRequest(mockRequest);

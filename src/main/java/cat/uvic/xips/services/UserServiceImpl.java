@@ -2,12 +2,12 @@ package cat.uvic.xips.services;
 
 import cat.uvic.xips.controller.NotFoundException;
 import cat.uvic.xips.dto.UserCreationRequest;
-import cat.uvic.xips.dto.UserDTO;
 import cat.uvic.xips.entities.Rating;
 import cat.uvic.xips.entities.User;
 import cat.uvic.xips.entities.UserProfile;
 import cat.uvic.xips.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import okhttp3.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -51,7 +51,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public okhttp3.Response createUserInOkta(UserCreationRequest userCreationRequest) throws IOException {
+    @SneakyThrows
+    public okhttp3.Response createUserInOkta(UserCreationRequest userCreationRequest) {
         MediaType mediaType = MediaType.parse("application/json");
         String jsonBody = "{\"profile\": {\"firstName\": \"" + userCreationRequest.getFirstName()
                 + "\",\"lastName\": \"" + userCreationRequest.getLastName()
@@ -69,7 +70,12 @@ public class UserServiceImpl implements UserService {
                 .addHeader("Authorization", "SSWS 00E7XvYk01A3oILfuVfkyl_XmqhfA1JCtmbnLJfX3r")
                 .build();
 
-        return client.newCall(request).execute();
+
+        try (var okhttpResponse = client.newCall(request).execute()) {
+            return okhttpResponse;
+        } catch (IOException e) {
+                throw new RuntimeException();
+        }
     }
 
     @Override
@@ -90,7 +96,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteByUsername(String username) {
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found: "+username));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
         userRepository.delete(user);
     }
 
