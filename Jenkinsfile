@@ -18,7 +18,7 @@ pipeline {
            }
         }
 
-        stage('PIT Mutation') {
+        /* stage('PIT Mutation') {
             steps {
                 sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn -DwithHistory test-compile org.pitest:pitest-maven:mutationCoverage'
                 sh 'ls -l target/pit-reports' // Add this line
@@ -27,7 +27,7 @@ pipeline {
             }
         }
 
-/*         stage('Sonar Scan') {
+        stage('Sonar Scan') {
             steps {
                 withSonarQubeEnv('sonarcloud') {
                     sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn sonar:sonar -Pcoverage -Dsonar.token=99ca41e7cdcf8d690af802b3917bbe26f2c716d8 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=xips-project -Dsonar.projectKey=xips-v2'
