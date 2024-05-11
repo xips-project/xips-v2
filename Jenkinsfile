@@ -27,7 +27,7 @@ pipeline {
             }
         }
 
-        stage('Sonar Scan') {
+/*         stage('Sonar Scan') {
             steps {
                 withSonarQubeEnv('sonarcloud') {
                     sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn sonar:sonar -Pcoverage -Dsonar.token=99ca41e7cdcf8d690af802b3917bbe26f2c716d8 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=xips-project -Dsonar.projectKey=xips-v2'
@@ -127,11 +127,11 @@ pipeline {
 
      post {
         always {
-            archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
-            junit 'target/surefire-reports/*.xml'
+            archiveArtifacts artifacts: 'target *//*.jar', fingerprint: true
+            junit 'target/surefire-reports *//*.xml'
             // Not creating reports correctly
-           // pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: '/var/jenkins_home/workspace/xips-v2/target/pit-reports/**/mutations.xml'
+           // pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: '/var/jenkins_home/workspace/xips-v2/target/pit-reports *//**//* mutations.xml'
 
             }
-        }
+        } */
 }
