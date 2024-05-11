@@ -19,9 +19,8 @@ public class CustomExceptionController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
-        ex.getFieldErrors().forEach(error -> {
-            errors.put(error.getField(), "Field: " + error.getField() + ". " + error.getDefaultMessage());
-        });
+        ex.getFieldErrors().forEach(error ->
+                errors.put(error.getField(), "Field: " + error.getField() + ". " + error.getDefaultMessage()));
         return ResponseEntity.badRequest().body(errors);
     }
 
@@ -47,5 +46,10 @@ public class CustomExceptionController {
         response.setTimestamp(LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<?> wasNotFoundHandler(HttpServletRequest request, NotFoundException ex){
+        return ResponseEntity.notFound().build();
     }
 }

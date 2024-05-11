@@ -1,5 +1,6 @@
 package cat.uvic.xips.services;
 
+import cat.uvic.xips.controller.NotFoundException;
 import cat.uvic.xips.dto.UserCreationRequest;
 import cat.uvic.xips.dto.UserDTO;
 import cat.uvic.xips.entities.Rating;
@@ -95,6 +96,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteById(UUID id) {
+        if (!userRepository.existsById(id)) {
+            throw new NotFoundException("User not found");
+        }
         userRepository.deleteById(id);
     }
 

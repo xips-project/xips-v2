@@ -19,6 +19,7 @@ public class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
     private int stars;
     private String message;
     @ManyToOne

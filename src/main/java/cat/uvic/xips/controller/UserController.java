@@ -2,14 +2,12 @@ package cat.uvic.xips.controller;
 
 import cat.uvic.xips.dto.UpdateUserRequest;
 import cat.uvic.xips.dto.UserCreationRequest;
-import cat.uvic.xips.dto.UserDTO;
 import cat.uvic.xips.entities.Rating;
 import cat.uvic.xips.entities.User;
 import cat.uvic.xips.entities.UserProfile;
 import cat.uvic.xips.services.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

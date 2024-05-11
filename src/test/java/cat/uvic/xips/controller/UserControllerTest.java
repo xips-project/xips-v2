@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(UserController.class)
 @Import({SecurityConfig.class, ApplicationConfig.class})
-public class UserControllerTest {
+class UserControllerTest {
 
     @MockBean
     UserRepository userRepository;
@@ -62,7 +62,7 @@ public class UserControllerTest {
     private static List<User> users;
 
 
-    public static SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor jwtRequestPostProcessor() {
+    static SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor jwtRequestPostProcessor() {
 
         return jwt().jwt(jwt -> jwt.claims(claims -> {
 
