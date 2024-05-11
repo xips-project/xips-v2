@@ -23,7 +23,7 @@ jobs:
       - name: build
         run: mvn verify
       - name: run sonar
-        run: sonar:sonar -Pcoverage -Dsonar.token=99ca41e7cdcf8d690af802b3917bbe26f2c716d8 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=xips-project -Dsonar.projectKey=xips-v2
+        run: mvn sonar:sonar -Pcoverage -Dsonar.token=99ca41e7cdcf8d690af802b3917bbe26f2c716d8 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=xips-project -Dsonar.projectKey=xips-v2
 
       - name: SonarQube Quality Gate check
         id: sonarqube-quality-gate-check
