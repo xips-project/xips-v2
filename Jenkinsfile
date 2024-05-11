@@ -12,15 +12,15 @@ pipeline {
             }
         }
 
- /*        stage('Build') {
+        stage('Build') {
             steps {
                 sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn verify'
            }
-        } */
+        }
 
         stage('PIT Mutation') {
             steps {
-                sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn -DwithHistory clean test-compile verify org.pitest:pitest-maven:mutationCoverage'
+                sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn -DwithHistory test-compile org.pitest:pitest-maven:mutationCoverage'
                 sh 'ls -l target/pit-reports' // Add this line
                 pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: 'target/pit-reports/**/mutations.xml'
 
