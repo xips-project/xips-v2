@@ -18,6 +18,12 @@ pipeline {
            }
         }
 
+        stage('PIT Mutation') {
+            steps {
+                pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+            }
+        }
+
         stage('Sonar Scan') {
             steps {
                 withSonarQubeEnv('sonarcloud') {
