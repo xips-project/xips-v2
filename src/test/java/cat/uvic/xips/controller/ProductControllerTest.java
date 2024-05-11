@@ -133,8 +133,27 @@ class ProductControllerTest {
     }
 
 
+    @Test
+    void findAll() {
+    }
 
+    @Test
+    void findById() {
+    }
 
+    @Test
+    void findAllByProductType() {
+    }
 
+    @Test
+    void createProduct() {
+    }
 
+    @Test
+    void updateProduct() {
+    }
+
+    @Test
+    void deleteProduct() {
+    }
 }
