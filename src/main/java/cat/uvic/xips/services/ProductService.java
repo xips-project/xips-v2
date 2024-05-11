@@ -4,14 +4,13 @@ import cat.uvic.xips.entities.Product;
 import cat.uvic.xips.entities.ProductType;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface ProductService {
 
     public List<Product> findAll();
 
-    public Optional<Product> findById(UUID id);
+    public Product findById(UUID id);
 
     public Product save(Product product);
 

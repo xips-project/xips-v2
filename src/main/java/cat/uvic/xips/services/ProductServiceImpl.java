@@ -1,16 +1,16 @@
 package cat.uvic.xips.services;
 
+import cat.uvic.xips.controller.NotFoundException;
 import cat.uvic.xips.entities.Product;
 import cat.uvic.xips.entities.ProductType;
 import cat.uvic.xips.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 
@@ -23,8 +23,8 @@ public class ProductServiceImpl implements ProductService{
         return productRepository.findAll();
     }
 
-    public Optional<Product> findById(UUID id) {
-        return productRepository.findById(id);
+    public Product findById(UUID id) {
+        return productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product with id: " + id + "not found."));
     }
 
 

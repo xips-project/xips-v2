@@ -48,4 +48,9 @@ public class CustomExceptionController {
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<?> wasNotFoundHandler(HttpServletRequest request, NotFoundException ex){
+        return ResponseEntity.notFound().build();
+    }
 }

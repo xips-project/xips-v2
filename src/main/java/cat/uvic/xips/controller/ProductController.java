@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -22,49 +21,38 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> findAll(){
+    public List<Product> findAll() {
         return productService.findAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Product> findById(@PathVariable UUID id) {
-        return productService.findById(id)
-                .map(product -> new ResponseEntity<>(product, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return ResponseEntity.ok(productService.findById(id));
     }
 
     @GetMapping("/type/{productType}")
-    public List<Product> findAllByProductType(@PathVariable ProductType productType){
+    public List<Product> findAllByProductType(@PathVariable ProductType productType) {
         return productService.findAllByProductType(productType);
     }
 
     @PostMapping
-    public void createProduct(@RequestBody Product product) {
-        productService.save(product);
+    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+        return new ResponseEntity<>(productService.save(product),HttpStatus.CREATED);
     }
 
-    @PutMapping ("/{id}")
+    @PutMapping("/{id}")
     public Product updateProduct(@PathVariable UUID id, @RequestBody Product product) {
-        Optional<Product> existingProduct = productService.findById(id);
-
-        if (existingProduct.isPresent()){
-            Product updatedProduct = existingProduct.get();
-            updatedProduct.setName(product.getName());
-            updatedProduct.setProductType(product.getProductType());
-            updatedProduct.setUsername(product.getUsername());
-            return productService.save(updatedProduct);
-        } else {
-            throw new NotFoundException("Product with id: "+id+" not found");
-        }
-
+        return productService.save(product);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable UUID id) {
-        Optional<Product> existingProduct = productService.findById(id);
-        if (existingProduct.isEmpty()){
-            throw new NotFoundException("Product with id: "+id+" not found");
-        }
+    public ResponseEntity<?> deleteProduct(@PathVariable UUID id) {
         productService.remove(id);
+        return ResponseEntity.noContent().build();
     }
 }
+
+
+
+
+

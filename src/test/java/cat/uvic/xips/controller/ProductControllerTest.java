@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -135,7 +134,7 @@ class ProductControllerTest {
     @Test
     void findByIdShouldFindProductTest() throws Exception {
         Product product = products.get(0);
-        given(productService.findById(product.getId())).willReturn(Optional.of(product));
+        given(productService.findById(product.getId())).willReturn(product);
 
         mockMvc.perform(get(basePath + "/" + product.getId())
                         .with(jwtRequestPostProcessor())
@@ -147,7 +146,8 @@ class ProductControllerTest {
     @Test
     void findByIdShouldNotFindProductTest() throws Exception {
         Product product = products.get(0);
-        given(productService.findById(product.getId())).willReturn(Optional.empty());
+        given(productService.findById(product.getId()))
+                .willThrow(new NotFoundException("Product not found"));
 
         mockMvc.perform(get(basePath + "/" + product.getId())
                         .with(jwtRequestPostProcessor())
@@ -157,16 +157,13 @@ class ProductControllerTest {
 
     @Test
     void findAllByProductType() throws Exception {
-        Product product = products.get(0);
-        when(productService.findById(product.getId())).thenReturn(Optional.of(product));
-        doNothing().when(productService).remove(product.getId());
+        given(productService.findAllByProductType(ProductType.BOOKS)).willReturn(List.of(products.get(0)));
 
-        mockMvc.perform(delete(basePath + "/" + product.getId())
+        mockMvc.perform(get(basePath + "/type/" + ProductType.BOOKS)
                         .with(jwtRequestPostProcessor())
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
-        verify(productService, times(1)).remove(product.getId());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
     }
 
     @Test
@@ -178,7 +175,7 @@ class ProductControllerTest {
                         .with(jwtRequestPostProcessor())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(product)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
 
         verify(productService, times(1)).save(any(Product.class));
@@ -188,7 +185,7 @@ class ProductControllerTest {
     @Test
     void updateProductByIdTest() throws Exception {
         Product product = products.get(0);
-        when(productService.findById(product.getId())).thenReturn(Optional.of(product));
+        when(productService.findById(product.getId())).thenReturn(product);
         when(productService.save(any(Product.class))).thenReturn(product);
 
         mockMvc.perform(put(basePath + "/" + product.getId())
@@ -204,13 +201,13 @@ class ProductControllerTest {
     @Test
     void deleteProductByIdTest() throws Exception {
         Product product = products.get(0);
-        when(productService.findById(product.getId())).thenReturn(Optional.of(product));
+        when(productService.findById(product.getId())).thenReturn(product);
         doNothing().when(productService).remove(product.getId());
 
         mockMvc.perform(delete(basePath + "/" + product.getId())
                         .with(jwtRequestPostProcessor())
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         verify(productService, times(1)).remove(product.getId());
     }
