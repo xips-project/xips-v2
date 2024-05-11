@@ -1,10 +1,7 @@
 package cat.uvic.xips.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -16,6 +13,7 @@ import java.util.UUID;
 @Table(name="products")
 public class Product {
 
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
