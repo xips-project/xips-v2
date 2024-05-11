@@ -162,6 +162,7 @@
                         <outputFormat>XML</outputFormat>
                         <outputFormat>HTML</outputFormat>
                     </outputFormats>
+                    <exportLineCoverage>true</exportLineCoverage>
                 </configuration>
                 <dependencies>
                     <dependency>
