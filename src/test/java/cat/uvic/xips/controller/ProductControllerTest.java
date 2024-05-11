@@ -133,10 +133,7 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$", hasSize(1)));
     }
 
-    void shouldDeleteProduct() throws Exception {
 
-
-    }
 
 
 
