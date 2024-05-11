@@ -120,7 +120,6 @@ class ProductControllerTest {
     }
 
     @Test
-    @Disabled
     void shouldReturnOneProductOfTypeBook() throws Exception {
 
         given(productService.findAllByProductType(ProductType.BOOKS))
