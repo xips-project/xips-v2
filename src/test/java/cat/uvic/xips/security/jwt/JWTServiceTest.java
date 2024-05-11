@@ -9,7 +9,7 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class JWTServiceTest {
+class JWTServiceTest {
 
     private JWTService jwtService;
     private UserDetails mockUserDetails;

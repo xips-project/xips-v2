@@ -12,7 +12,7 @@ class ProductTest {
     void builderShouldBuildCorrectProduct() {
         UUID id = UUID.randomUUID();
         String name = "testProduct";
-        ProductType productType = ProductType.BOOKS; // replace with actual ProductType
+        ProductType productType = ProductType.BOOKS;
         String username = "testuser";
 
         Product product = Product.builder()

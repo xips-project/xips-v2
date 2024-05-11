@@ -18,7 +18,7 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class JWTAuthenticationFilterTest {
+class JWTAuthenticationFilterTest {
 
     private JWTAuthenticationFilter jwtAuthenticationFilter;
     private JWTService jwtService;
