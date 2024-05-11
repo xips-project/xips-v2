@@ -154,6 +154,7 @@
                 <configuration>
                     <outputFormats>
                         <outputFormat>XML</outputFormat>
+                        <outputFormat>HTML</outputFormat>
                     </outputFormats>
                 </configuration>
                 <dependencies>
