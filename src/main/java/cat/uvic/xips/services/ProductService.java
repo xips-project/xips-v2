@@ -13,7 +13,7 @@ public interface ProductService {
 
     public Optional<Product> findById(UUID id);
 
-    public void save(Product product);
+    public Product save(Product product);
 
     public void remove(UUID id);
 

@@ -27,8 +27,10 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Product> findById(@PathVariable UUID id) {
-        return productService.findById(id);
+    public ResponseEntity<Product> findById(@PathVariable UUID id) {
+        return productService.findById(id)
+                .map(product -> new ResponseEntity<>(product, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/type/{productType}")
@@ -42,7 +44,7 @@ public class ProductController {
     }
 
     @PutMapping ("/{id}")
-    public void updateProduct(@PathVariable UUID id, @RequestBody Product product) {
+    public Product updateProduct(@PathVariable UUID id, @RequestBody Product product) {
         Optional<Product> existingProduct = productService.findById(id);
 
         if (existingProduct.isPresent()){
@@ -50,7 +52,7 @@ public class ProductController {
             updatedProduct.setName(product.getName());
             updatedProduct.setProductType(product.getProductType());
             updatedProduct.setUsername(product.getUsername());
-            productService.save(updatedProduct);
+            return productService.save(updatedProduct);
         } else {
             throw new NotFoundException("Product with id: "+id+" not found");
         }

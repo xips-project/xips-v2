@@ -2,14 +2,13 @@ package cat.uvic.xips.controller;
 
 import cat.uvic.xips.entities.Product;
 import cat.uvic.xips.entities.ProductType;
-import cat.uvic.xips.repositories.ProductRepository;
 import cat.uvic.xips.repositories.UserRepository;
 import cat.uvic.xips.security.config.ApplicationConfig;
 import cat.uvic.xips.security.config.SecurityConfig;
 import cat.uvic.xips.security.jwt.JWTService;
 import cat.uvic.xips.services.ProductService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -23,13 +22,15 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ProductController.class)
@@ -41,9 +42,6 @@ class ProductControllerTest {
 
     @MockBean
     ProductService productService;
-
-    @MockBean
-    ProductRepository productRepository;
 
     @MockBean
     JWTService jwtService;
@@ -111,7 +109,8 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$", hasSize(2)));
     }
 
-    @Test // TODO
+    // TODO
+    @Test
     void getProductsAndRatingsByUsername() throws Exception {
 
         MvcResult mvcResult = mockMvc.perform(get(basePath + "/list/user/afcasco")).andReturn();
@@ -134,26 +133,85 @@ class ProductControllerTest {
 
 
     @Test
-    void findAll() {
+    void findByIdShouldFindProductTest() throws Exception {
+        Product product = products.get(0);
+        given(productService.findById(product.getId())).willReturn(Optional.of(product));
+
+        mockMvc.perform(get(basePath + "/" + product.getId())
+                        .with(jwtRequestPostProcessor())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(product.getId().toString())));
     }
 
     @Test
-    void findById() {
+    void findByIdShouldNotFindProductTest() throws Exception {
+        Product product = products.get(0);
+        given(productService.findById(product.getId())).willReturn(Optional.empty());
+
+        mockMvc.perform(get(basePath + "/" + product.getId())
+                        .with(jwtRequestPostProcessor())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    void findAllByProductType() {
+    void findAllByProductType() throws Exception {
+        Product product = products.get(0);
+        when(productService.findById(product.getId())).thenReturn(Optional.of(product));
+        doNothing().when(productService).remove(product.getId());
+
+        mockMvc.perform(delete(basePath + "/" + product.getId())
+                        .with(jwtRequestPostProcessor())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(productService, times(1)).remove(product.getId());
     }
 
     @Test
-    void createProduct() {
+    void createProductTest() throws Exception {
+        Product product = products.get(0);
+        when(productService.save(any(Product.class))).thenReturn(product);
+
+        mockMvc.perform(post(basePath)
+                        .with(jwtRequestPostProcessor())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(product)))
+                .andExpect(status().isOk());
+
+
+        verify(productService, times(1)).save(any(Product.class));
+
     }
 
     @Test
-    void updateProduct() {
+    void updateProductByIdTest() throws Exception {
+        Product product = products.get(0);
+        when(productService.findById(product.getId())).thenReturn(Optional.of(product));
+        when(productService.save(any(Product.class))).thenReturn(product);
+
+        mockMvc.perform(put(basePath + "/" + product.getId())
+                        .with(jwtRequestPostProcessor())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(product)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(product.getId().toString())));
+
+        verify(productService, times(1)).save(any(Product.class));
     }
 
     @Test
-    void deleteProduct() {
+    void deleteProductByIdTest() throws Exception {
+        Product product = products.get(0);
+        when(productService.findById(product.getId())).thenReturn(Optional.of(product));
+        doNothing().when(productService).remove(product.getId());
+
+        mockMvc.perform(delete(basePath + "/" + product.getId())
+                        .with(jwtRequestPostProcessor())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(productService, times(1)).remove(product.getId());
     }
 }
