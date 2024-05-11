@@ -20,7 +20,7 @@ pipeline {
 
         stage('PIT Mutation') {
             steps {
-                sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn -DwithHistory test-compile org.pitest:pitest-maven:mutationCoverage'
+                sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn  test-compile org.pitest:pitest-maven:mutationCoverage'
                 pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: 'target/pit-reports/mutations.xml'
 
             }
