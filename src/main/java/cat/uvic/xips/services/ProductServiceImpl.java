@@ -4,12 +4,15 @@ import cat.uvic.xips.controller.NotFoundException;
 import cat.uvic.xips.entities.Product;
 import cat.uvic.xips.entities.ProductType;
 import cat.uvic.xips.repositories.ProductRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
@@ -19,11 +22,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable("products")
     public List<Product> findAll() {
+        log.warn("findAll hit!");
         return productRepository.findAll();
     }
 
+    @Cacheable("products")
     public Product findById(UUID id) {
+        log.warn("FindById hit!");
         return productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product with id: " + id + "not found."));
     }
 
