@@ -1,6 +1,5 @@
 package cat.uvic.xips.services;
 
-import cat.uvic.xips.controller.NotFoundException;
 import cat.uvic.xips.dto.UserCreationRequest;
 import cat.uvic.xips.entities.Rating;
 import cat.uvic.xips.entities.User;
@@ -156,7 +155,7 @@ class UserServiceImplTest {
         UUID id = UUID.randomUUID();
         when(userRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> userService.deleteById(id));
+        assertThrows(UsernameNotFoundException.class, () -> userService.deleteById(id));
     }
 
     @Test

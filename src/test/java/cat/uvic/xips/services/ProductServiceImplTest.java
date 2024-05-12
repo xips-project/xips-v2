@@ -1,6 +1,6 @@
 package cat.uvic.xips.services;
 
-import cat.uvic.xips.controller.NotFoundException;
+import cat.uvic.xips.exception.ProductNotFoundException;
 import cat.uvic.xips.entities.Product;
 import cat.uvic.xips.entities.ProductType;
 import cat.uvic.xips.repositories.ProductRepository;
@@ -42,7 +42,7 @@ class ProductServiceImplTest {
         UUID id = UUID.randomUUID();
         when(productRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> productService.findById(id));
+        assertThrows(ProductNotFoundException.class, () -> productService.findById(id));
 
         verify(productRepository, times(1)).findById(id);
     }
@@ -105,9 +105,9 @@ class ProductServiceImplTest {
     @Test
     void removeNonExistingProductThrowsException() {
         UUID id = UUID.randomUUID();
-        doThrow(new NotFoundException("Product not found")).when(productRepository).deleteById(id);
+        doThrow(new ProductNotFoundException("Product not found")).when(productRepository).deleteById(id);
 
-        assertThrows(NotFoundException.class, () -> productService.remove(id));
+        assertThrows(ProductNotFoundException.class, () -> productService.remove(id));
     }
 
     @Test

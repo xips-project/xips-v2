@@ -2,6 +2,7 @@ package cat.uvic.xips.controller;
 
 import cat.uvic.xips.entities.Product;
 import cat.uvic.xips.entities.ProductType;
+import cat.uvic.xips.exception.ProductNotFoundException;
 import cat.uvic.xips.repositories.UserRepository;
 import cat.uvic.xips.security.config.ApplicationConfig;
 import cat.uvic.xips.security.config.SecurityConfig;
@@ -138,7 +139,7 @@ class ProductControllerTest {
     void findByIdShouldNotFindProductTest() throws Exception {
         Product product = products.get(0);
         given(productService.findById(product.getId()))
-                .willThrow(new NotFoundException("Product not found"));
+                .willThrow(new ProductNotFoundException("Product not found"));
 
         mockMvc.perform(get(basePath + "/" + product.getId())
                         .with(jwtRequestPostProcessor())

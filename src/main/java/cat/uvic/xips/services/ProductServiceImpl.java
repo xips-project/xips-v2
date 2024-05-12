@@ -1,6 +1,6 @@
 package cat.uvic.xips.services;
 
-import cat.uvic.xips.controller.NotFoundException;
+import cat.uvic.xips.exception.ProductNotFoundException;
 import cat.uvic.xips.entities.Product;
 import cat.uvic.xips.entities.ProductType;
 import cat.uvic.xips.repositories.ProductRepository;
@@ -31,7 +31,7 @@ public class ProductServiceImpl implements ProductService {
     @Cacheable("products")
     public Product findById(UUID id) {
         log.warn("FindById hit!");
-        return productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product with id: " + id + "not found."));
+        return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product with id: " + id + "not found."));
     }
 
 
