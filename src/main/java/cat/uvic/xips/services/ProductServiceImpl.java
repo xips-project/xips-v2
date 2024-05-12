@@ -1,14 +1,20 @@
 package cat.uvic.xips.services;
 
-import cat.uvic.xips.exception.ProductNotFoundException;
 import cat.uvic.xips.entities.Product;
 import cat.uvic.xips.entities.ProductType;
+import cat.uvic.xips.exception.ProductNotFoundException;
 import cat.uvic.xips.repositories.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -16,39 +22,66 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final Cache productsCache;
 
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, CacheManager cacheManager) {
         this.productRepository = productRepository;
+        this.productsCache = cacheManager.getCache("products");
     }
 
     @Override
-    @Cacheable("products")
     public List<Product> findAll() {
-        log.warn("findAll hit!");
-        return productRepository.findAll();
+        return Optional.ofNullable(productsCache.get("", productRepository::findAll))
+                .orElseThrow(() -> new RuntimeException("Error retrieving products from cache"));
     }
 
-    @Cacheable("products")
+    @Cacheable(value = "products", key = "#id")
     public Product findById(UUID id) {
-        log.warn("FindById hit!");
-        return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product with id: " + id + "not found."));
+        return productRepository
+                .findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product with id: " + id + "not found."));
     }
 
-
     @Override
+    @CachePut(value = "products", key = "#product.id")
     public Product save(Product product) {
-        return productRepository.save(product);
+        Product savedProduct = productRepository.save(product);
+        updateCachedList(savedProduct);
+        return savedProduct;
     }
 
     @Override
+    @CacheEvict(value = "products", key = "#id")
     public void remove(UUID id) {
         productRepository.deleteById(id);
+        removeProductFromCachedList(id);
     }
 
     @Override
     public List<Product> findAllByProductType(ProductType productType) {
-        return productRepository.findAllByProductType(productType);
+        return Optional.ofNullable(productsCache.get(productType,
+                        () -> productRepository.findAllByProductType(productType)))
+                .orElseThrow(() -> new RuntimeException("Error retrieving products from cache"));
     }
 
+    private void updateCachedList(Product product) {
+        try {
+            List<Product> cachedProducts = productsCache.get("", ArrayList::new);
+            cachedProducts.removeIf(p -> p.getId().equals(product.getId()));
+            cachedProducts.add(product);
+            productsCache.put("", cachedProducts);
+        } catch (Cache.ValueRetrievalException e) {
+            throw new RuntimeException("Error updating cached list of products", e);
+        }
+    }
 
+    private void removeProductFromCachedList(UUID id) {
+        try {
+            List<Product> cachedProducts = productsCache.get("", ArrayList::new);
+            cachedProducts.removeIf(p -> p.getId().equals(id));
+            productsCache.put("", cachedProducts);
+        } catch (Cache.ValueRetrievalException e) {
+            throw new RuntimeException("Error removing product from cached list", e);
+        }
+    }
 }

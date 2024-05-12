@@ -1,8 +1,8 @@
 package cat.uvic.xips.services;
 
-import cat.uvic.xips.exception.ProductNotFoundException;
 import cat.uvic.xips.entities.Product;
 import cat.uvic.xips.entities.ProductType;
+import cat.uvic.xips.exception.ProductNotFoundException;
 import cat.uvic.xips.repositories.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +10,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.cache.CacheManager;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ProductServiceImplTest {
+
+    @Mock
+    CacheManager cacheManager;
 
     @Mock
     private ProductRepository productRepository;
@@ -34,7 +38,7 @@ class ProductServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        productService = new ProductServiceImpl(productRepository);
+        productService = new ProductServiceImpl(productRepository, cacheManager);
     }
 
     @Test
