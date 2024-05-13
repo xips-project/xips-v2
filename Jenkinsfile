@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        'maven'
+        maven 'Maven 3.9.6'
     }
     environment {
         DOCKER_USERNAME = credentials('DOCKER_USERNAME')
