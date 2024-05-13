@@ -62,14 +62,20 @@ pipeline {
 
 
 
-        stage('Retrieve version') {
-            steps {
-                script {
-                    version = sh(script: '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true).trim()
-                    writeFile file: "${env.WORKSPACE}/TAG_NAME", text: "TAG_NAME=${version}"
-                }
-            }
-        }
+       stage('Retrieve version') {
+           steps {
+               script {
+                   try {
+                       version = sh(script: '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true).trim()
+                       echo "Retrieved version: ${version}"
+                       writeFile file: "${env.WORKSPACE}/TAG_NAME", text: "TAG_NAME=${version}"
+                   } catch (Exception e) {
+                       echo "Failed to retrieve version: ${e}"
+                       error("Stopping pipeline due to error in version retrieval")
+                   }
+               }
+           }
+       }
 
         stage('Setup Docker Context') {
             steps {
@@ -102,6 +108,28 @@ pipeline {
                 }
             }
         }
+
+         stage('Build and push') {
+                    steps {
+                        script {
+                             def dockerTag = "${DOCKER_USERNAME}/xips-v2"
+                                        def versionTag = "${dockerTag}:${version}"
+                                        def branchName = env.BRANCH_NAME // Get the name of the current branch
+                                        def prNumber = env.CHANGE_ID // Get the pull request number
+
+                                        // Include branch name or pull request number in the image tag
+                                        if (prNumber != null && prNumber != '') {
+                                            dockerTag += "-PR-${prNumber}"
+                                        } else {
+                                            dockerTag += "-${branchName}"
+                                        }
+
+                                        def latestTag = "${dockerTag}:latest"
+                                        sh "docker buildx build --push --tag ${latestTag} --tag ${versionTag} ."
+                        }
+                    }
+                }
+
 
 
 
