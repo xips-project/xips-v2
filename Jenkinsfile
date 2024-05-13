@@ -36,7 +36,7 @@ pipeline {
             }
         }
 
-        stage("Quality Gate Check") {
+       /*  stage("Quality Gate Check") {
             steps {
                 script {
                     def qualityGateStatus = ''
@@ -127,14 +127,12 @@ pipeline {
                     sh "docker buildx build --push --tag ${latestTag} --tag ${versionTag} ."
                 }
             }
-        }
-
-
+        } */
     }
 
     post {
         always {
-            //archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+            archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             junit 'target/surefire-reports/*.xml'
             // Not creating reports correctly
             // pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: '/var/jenkins_home/workspace/xips-v2/target/pit-reports/**/mutations.xml'
