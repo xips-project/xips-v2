@@ -180,12 +180,6 @@
                         <outputFormat>HTML</outputFormat>
                     </outputFormats>
                     <exportLineCoverage>true</exportLineCoverage>
-                    <targetClasses>
-                        <param>cat.uvic.xips.controller.*</param>
-                    </targetClasses>
-                    <targetTests>
-                        <param>cat.uvic.xips.controller.*</param>
-                    </targetTests>
                 </configuration>
                 <dependencies>
                     <dependency>
