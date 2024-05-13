@@ -18,15 +18,6 @@ pipeline {
             }
         } */
 
-        stage('PIT Mutation') {
-            steps {
-                sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn -DwithHistory test-compile org.pitest:pitest-maven:mutationCoverage'
-                sh 'ls -l target/pit-reports' // Add this line
-
-
-
-            }
-        }
 
         stage('Sonar Scan') {
             steps {
@@ -59,6 +50,17 @@ pipeline {
                 }
             }
         }
+
+        stage('PIT Mutation') {
+                    steps {
+                        sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn -DwithHistory test-compile org.pitest:pitest-maven:mutationCoverage'
+                        sh 'ls -l target/pit-reports' // Add this line
+
+
+
+                    }
+                }
+
 
 
         stage('Retrieve version') {
