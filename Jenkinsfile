@@ -1,5 +1,9 @@
 pipeline {
     agent any
+
+    tools {
+        maven
+    }
     environment {
         DOCKER_USERNAME = credentials('DOCKER_USERNAME')
         DOCKER_TOKEN = credentials('DOCKER_TOKEN')
