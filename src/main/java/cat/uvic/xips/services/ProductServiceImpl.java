@@ -12,10 +12,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -67,6 +64,7 @@ public class ProductServiceImpl implements ProductService {
     private void updateCachedList(Product product) {
         try {
             List<Product> cachedProducts = productsCache.get("", ArrayList::new);
+            assert cachedProducts != null;
             cachedProducts.removeIf(p -> p.getId().equals(product.getId()));
             cachedProducts.add(product);
             productsCache.put("", cachedProducts);
@@ -78,7 +76,7 @@ public class ProductServiceImpl implements ProductService {
     private void removeProductFromCachedList(UUID id) {
         try {
             List<Product> cachedProducts = productsCache.get("", ArrayList::new);
-            cachedProducts.removeIf(p -> p.getId().equals(id));
+            Objects.requireNonNull(cachedProducts).removeIf(p -> p.getId().equals(id));
             productsCache.put("", cachedProducts);
         } catch (Cache.ValueRetrievalException e) {
             throw new RuntimeException("Error removing product from cached list", e);
