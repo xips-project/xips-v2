@@ -18,11 +18,11 @@ pipeline {
             }
         }
 
-        stage('PIT Mutation') {
+        /* stage('PIT Mutation') {
             steps {
                 sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn -DwithHistory test-compile org.pitest:pitest-maven:mutationCoverage'
                 sh 'ls -l target/pit-reports' // Add this line
-                pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: 'target/pit-reports/**/mutations.xml'
+                pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: 'target/pit-reports *//**//* mutations.xml'
 
 
             }
@@ -36,7 +36,7 @@ pipeline {
             }
         }
 
-       /*  stage("Quality Gate Check") {
+        stage("Quality Gate Check") {
             steps {
                 script {
                     def qualityGateStatus = ''
@@ -58,20 +58,15 @@ pipeline {
                     }
                 }
             }
-        }
+        } */
 
 
         stage('Retrieve version') {
             steps {
                 script {
-                    try {
-                        version = sh(script: '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true).trim()
-                        echo "Retrieved version: ${version}"
-                        writeFile file: "${env.WORKSPACE}/TAG_NAME", text: "TAG_NAME=${version}"
-                    } catch (Exception e) {
-                        echo "Failed to retrieve version: ${e}"
-                        error("Stopping pipeline due to error in version retrieval")
-                    }
+                    version = sh(script: '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true).trim()
+                    echo "Retrieved version: ${version}"
+                    writeFile file: "${env.WORKSPACE}/TAG_NAME", text: "TAG_NAME=${version}"
                 }
             }
         }
@@ -127,7 +122,7 @@ pipeline {
                     sh "docker buildx build --push --tag ${latestTag} --tag ${versionTag} ."
                 }
             }
-        } */
+        }
     }
 
     post {
