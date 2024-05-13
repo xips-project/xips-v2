@@ -132,12 +132,6 @@
             <artifactId>cache-api</artifactId>
             <version>1.1.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.pitest</groupId>
-            <artifactId>pitest-parent</artifactId>
-            <version>1.16.1</version>
-            <type>pom</type>
-        </dependency>
 
     </dependencies>
 
@@ -186,8 +180,11 @@
                         <outputFormat>HTML</outputFormat>
                     </outputFormats>
                     <exportLineCoverage>true</exportLineCoverage>
+                    <targetClasses>
+                        <param>cat.uvic.xips.controller.*</param>
+                    </targetClasses>
                     <targetTests>
-                        <param></param>
+                        <param>cat.uvic.xips.controller.*</param>
                     </targetTests>
                 </configuration>
                 <dependencies>
