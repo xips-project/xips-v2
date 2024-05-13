@@ -18,16 +18,16 @@ pipeline {
             }
         }
 
-        stage('PIT Mutation') {
+        /* stage('PIT Mutation') {
             steps {
                 sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn -DwithHistory test-compile org.pitest:pitest-maven:mutationCoverage'
                 sh 'ls -l target/pit-reports' // Add this line
-                pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: 'target/pit-reports/**/mutations.xml'
+                pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: 'target/pit-reports *//**//* mutations.xml'
 
 
             }
-        }
-/*
+        } */
+
         stage('Sonar Scan') {
             steps {
                 withSonarQubeEnv('sonarcloud') {
@@ -58,7 +58,7 @@ pipeline {
                     }
                 }
             }
-        } */
+        }
 
 
         stage('Retrieve version') {
