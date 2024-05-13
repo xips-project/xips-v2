@@ -20,7 +20,7 @@ pipeline {
 
         stage('PIT Mutation') {
             steps {
-                sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn clea verify -DwithHistory test-compile org.pitest:pitest-maven:mutationCoverage'
+                sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn clean verify -DwithHistory test-compile org.pitest:pitest-maven:mutationCoverage'
                 sh 'ls -l target/pit-reports' // Add this line
 
 
