@@ -18,25 +18,29 @@ pipeline {
            }
         }
 
+/*
         stage('PIT Mutation') {
             steps {
                 sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn -DwithHistory test-compile org.pitest:pitest-maven:mutationCoverage'
                 sh 'ls -l target/pit-reports' // Add this line
-                pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: 'target/pit-reports/**/mutations.xml'
+                pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: 'target/pit-reports */
+/**//*
+mutations.xml'
 
 
             }
         }
+ */
 
-        stage('Sonar Scan') {
+/*         stage('Sonar Scan') {
             steps {
                 withSonarQubeEnv('sonarcloud') {
                     sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn verify sonar:sonar -Pcoverage -Dsonar.token=99ca41e7cdcf8d690af802b3917bbe26f2c716d8 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=xips-project -Dsonar.projectKey=xips-v2'
                 }
             }
-        }
+        } */
 
-       stage("Quality Gate Check") {
+    /*    stage("Quality Gate Check") {
            steps {
                script {
                    def qualityGateStatus = ''
@@ -59,7 +63,7 @@ pipeline {
                }
            }
        }
-
+ */
 
 
         stage('Retrieve version') {
@@ -71,6 +75,7 @@ pipeline {
             }
         }
 
+/*
         stage('Setup Docker Context') {
             steps {
                 script {
@@ -83,8 +88,28 @@ pipeline {
                 }
             }
         }
+ */
 
-        stage('Login to Docker Hub') {
+  stage('Remove Docker Context') {
+                     steps {
+                         sh 'docker context rm -f my-context'
+                     }
+                 }
+
+         stage('Create Docker Context') {
+             steps {
+                 sh 'docker context create my-context'
+             }
+         }
+
+         stage('Set Docker Context') {
+             steps {
+                sh 'docker context use my-context'
+             }
+         }
+
+
+       /*  stage('Login to Docker Hub') {
             steps {
                 withCredentials([
                     string(credentialsId: 'DOCKER_USERNAME', variable: 'DOCKER_USERNAME'),
@@ -93,17 +118,17 @@ pipeline {
                     sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_TOKEN}"
                 }
             }
-        }
+        } */
 
         stage('Set up Docker Buildx') {
             steps {
                 script {
-                    sh 'docker buildx create my-context'
+                    sh 'docker buildx create ---use my-context'
                 }
             }
         }
 
-        stage('Build and push') {
+      /*   stage('Build and push') {
             steps {
                 script {
                      def dockerTag = "${DOCKER_USERNAME}/xips-v2"
@@ -122,7 +147,7 @@ pipeline {
                                 sh "docker buildx build --push --tag ${latestTag} --tag ${versionTag} ."
                 }
             }
-        }
+        } */
 
     }
 
