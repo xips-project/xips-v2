@@ -6,11 +6,11 @@ pipeline {
         SONAR_TOKEN = credentials('SONAR_TOKEN')
     }
     stages {
-        /* stage('Checkout') {
+        stage('Checkout') {
             steps {
                 checkout scm
             }
-        } */
+        }
 
          stage('Build') {
             steps {
