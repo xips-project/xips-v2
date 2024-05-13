@@ -12,11 +12,11 @@ pipeline {
             }
         }
 
-       /*  stage('Build') {
+        stage('Build') {
             steps {
-                sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn verify'
+                sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn clean'
             }
-        } */
+        }
 
 
         stage('Sonar Scan') {
