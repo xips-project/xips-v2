@@ -22,7 +22,7 @@ pipeline {
             steps {
                 sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn clea verify -DwithHistory test-compile org.pitest:pitest-maven:mutationCoverage'
                 sh 'ls -l target/pit-reports' // Add this line
-                //pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+
 
 
             }
@@ -130,8 +130,7 @@ pipeline {
             archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             junit 'target/surefire-reports/*.xml'
             // Not creating reports correctly
-            // pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: '/var/jenkins_home/workspace/xips-v2/target/pit-reports/**/mutations.xml'
-
+            pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
         }
     }
 }
