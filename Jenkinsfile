@@ -48,7 +48,7 @@ pipeline {
 
         stage('PIT Mutation') {
             steps {
-               sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn org.pitest:pitest-maven:mutationCoverage'
+               sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn -DwithHistory org.pitest:pitest-maven:mutationCoverage'
                sh 'ls -l target/pit-reports' // Add this line
             }
         }
