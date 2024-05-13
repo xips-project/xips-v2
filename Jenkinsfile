@@ -15,7 +15,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn verify'
-           }
+            }
         }
 
         stage('PIT Mutation') {
@@ -36,46 +36,45 @@ pipeline {
             }
         }
 
-       stage("Quality Gate Check") {
-           steps {
-               script {
-                   def qualityGateStatus = ''
-                   def timeoutMinutes = 30 // Adjust the timeout as needed
+        stage("Quality Gate Check") {
+            steps {
+                script {
+                    def qualityGateStatus = ''
+                    def timeoutMinutes = 30 // Adjust the timeout as needed
 
-                   echo "Polling SonarQube for Quality Gate status..."
-                   timeout(time: timeoutMinutes, unit: 'MINUTES') {
-                       while (qualityGateStatus != 'IN_PROGRESS') {
-                           qualityGateStatus = sh(script: "curl -s -u ${SONAR_TOKEN}: https://sonarcloud.io/api/qualitygates/project_status?projectKey=xips-v2", returnStdout: true).trim()
-                           if (qualityGateStatus.contains('projectStatus":{"status":"OK"')) {
-                               echo "Quality Gate passed!"
-                               break
-                           } else if (qualityGateStatus.contains('projectStatus":{"status":"ERROR"')) {
-                               error "Quality Gate failed!"
-                           } else {
-                               echo "Quality Gate is still in progress. Waiting..."
-                           }
-                       }
-                   }
-               }
-           }
-       }
+                    echo "Polling SonarQube for Quality Gate status..."
+                    timeout(time: timeoutMinutes, unit: 'MINUTES') {
+                        while (qualityGateStatus != 'IN_PROGRESS') {
+                            qualityGateStatus = sh(script: "curl -s -u ${SONAR_TOKEN}: https://sonarcloud.io/api/qualitygates/project_status?projectKey=xips-v2", returnStdout: true).trim()
+                            if (qualityGateStatus.contains('projectStatus":{"status":"OK"')) {
+                                echo "Quality Gate passed!"
+                                break
+                            } else if (qualityGateStatus.contains('projectStatus":{"status":"ERROR"')) {
+                                error "Quality Gate failed!"
+                            } else {
+                                echo "Quality Gate is still in progress. Waiting..."
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
 
-
-       stage('Retrieve version') {
-           steps {
-               script {
-                   try {
-                       version = sh(script: '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true).trim()
-                       echo "Retrieved version: ${version}"
-                       writeFile file: "${env.WORKSPACE}/TAG_NAME", text: "TAG_NAME=${version}"
-                   } catch (Exception e) {
-                       echo "Failed to retrieve version: ${e}"
-                       error("Stopping pipeline due to error in version retrieval")
-                   }
-               }
-           }
-       }
+        stage('Retrieve version') {
+            steps {
+                script {
+                    try {
+                        version = sh(script: '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true).trim()
+                        echo "Retrieved version: ${version}"
+                        writeFile file: "${env.WORKSPACE}/TAG_NAME", text: "TAG_NAME=${version}"
+                    } catch (Exception e) {
+                        echo "Failed to retrieve version: ${e}"
+                        error("Stopping pipeline due to error in version retrieval")
+                    }
+                }
+            }
+        }
 
         stage('Setup Docker Context') {
             steps {
@@ -93,8 +92,8 @@ pipeline {
         stage('Login to Docker Hub') {
             steps {
                 withCredentials([
-                    string(credentialsId: 'DOCKER_USERNAME', variable: 'DOCKER_USERNAME'),
-                    string(credentialsId: 'DOCKER_TOKEN', variable: 'DOCKER_TOKEN')
+                        string(credentialsId: 'DOCKER_USERNAME', variable: 'DOCKER_USERNAME'),
+                        string(credentialsId: 'DOCKER_TOKEN', variable: 'DOCKER_TOKEN')
                 ]) {
                     sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_TOKEN}"
                 }
@@ -109,39 +108,18 @@ pipeline {
             }
         }
 
-         stage('Build and push') {
-                    steps {
-                        script {
-                             def dockerTag = "${DOCKER_USERNAME}/xips-v2"
-                                        def versionTag = "${dockerTag}:${version}"
-                                        def branchName = env.BRANCH_NAME // Get the name of the current branch
-                                        def prNumber = env.CHANGE_ID // Get the pull request number
-
-                                        // Include branch name or pull request number in the image tag
-                                        if (prNumber != null && prNumber != '') {
-                                            dockerTag += "-PR-${prNumber}"
-                                        } else {
-                                            dockerTag += "-${branchName}"
-                                        }
-
-                                        def latestTag = "${dockerTag}:latest"
-                                        sh "docker buildx build --push --tag ${latestTag} --tag ${versionTag} ."
-                        }
-                    }
-                }
-
 
 
 
     }
 
-     post {
+    post {
         always {
             archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             junit 'target/surefire-reports/*.xml'
             // Not creating reports correctly
-           // pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: '/var/jenkins_home/workspace/xips-v2/target/pit-reports/**/mutations.xml'
+            // pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: '/var/jenkins_home/workspace/xips-v2/target/pit-reports/**/mutations.xml'
 
-            }
         }
+    }
 }
