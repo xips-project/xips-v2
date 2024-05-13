@@ -178,16 +178,15 @@ class ProductControllerTest {
     void updateProductByIdTest() throws Exception {
         Product product = products.get(0);
         when(productService.findById(product.getId())).thenReturn(product);
-        when(productService.save(any(Product.class))).thenReturn(product);
+        when(productService.update(any(UUID.class), any(Product.class))).thenReturn(product);
 
         mockMvc.perform(put(basePath + "/" + product.getId())
                         .with(jwtRequestPostProcessor())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(product)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(product.getId().toString())));
+                .andExpect(status().isNoContent());
 
-        verify(productService, times(1)).save(any(Product.class));
+        verify(productService, times(1)).update(any(UUID.class), any(Product.class));
     }
 
     @Test

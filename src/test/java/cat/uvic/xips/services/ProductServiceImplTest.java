@@ -119,6 +119,28 @@ class ProductServiceImplTest {
     }
 
     @Test
+    void updateUpdatesExistingProduct() {
+        UUID id = UUID.randomUUID();
+        Product existingProduct = new Product();
+        existingProduct.setId(id);
+        Product updatedProduct = new Product();
+        updatedProduct.setName("Updated Name");
+        updatedProduct.setProductType(ProductType.BOOKS);
+        when(productRepository.findById(id)).thenReturn(Optional.of(existingProduct));
+        when(productRepository.save(any(Product.class))).thenReturn(updatedProduct);
+
+        Product resultProduct = productService.update(id, updatedProduct);
+
+        assertAll(
+                () -> assertEquals(updatedProduct.getName(), resultProduct.getName()),
+                () -> assertEquals(updatedProduct.getProductType(), resultProduct.getProductType()),
+                () -> verify(productRepository, times(1)).save(productCaptor.capture()),
+                () -> assertEquals(updatedProduct.getName(), productCaptor.getValue().getName()),
+                () -> assertEquals(updatedProduct.getProductType(), productCaptor.getValue().getProductType())
+        );
+    }
+
+    @Test
     void removeNonExistingProductThrowsException() {
         UUID id = UUID.randomUUID();
         doThrow(new ProductNotFoundException("Product not found")).when(productRepository).deleteById(id);

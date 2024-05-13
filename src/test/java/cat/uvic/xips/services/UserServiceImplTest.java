@@ -4,16 +4,16 @@ import cat.uvic.xips.dto.UserCreationRequest;
 import cat.uvic.xips.entities.Rating;
 import cat.uvic.xips.entities.User;
 import cat.uvic.xips.repositories.UserRepository;
-import okhttp3.Protocol;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,26 +22,28 @@ import static org.mockito.Mockito.*;
 
 class UserServiceImplTest {
 
-    @Mock
+
     private UserRepository userRepository;
 
-    private UserServiceImpl userService;
+    private UserService userService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        userRepository  = Mockito.mock(UserRepository.class);
         userService = new UserServiceImpl(userRepository);
     }
 
     @Test
-    void testCreateUserInOkta()  {
-        UserServiceImpl userService = new UserServiceImpl(userRepository);
-
+    void createUserInOkta_shouldReturnExpectedResponse() throws IOException {
         UserCreationRequest userCreationRequest = new UserCreationRequest();
         userCreationRequest.setFirstName("Test");
         userCreationRequest.setLastName("User");
         userCreationRequest.setEmail("testuser@gmail.com");
         userCreationRequest.setPassword("password");
+
+        OkHttpClient client = Mockito.mock(OkHttpClient.class);
+        Call call = Mockito.mock(Call.class);
+        ((UserServiceImpl)userService).setClient(client);
 
         Response response = new Response.Builder()
                 .request(new Request.Builder().url("http://localhost").build())
@@ -50,13 +52,23 @@ class UserServiceImplTest {
                 .message("OK")
                 .build();
 
-        UserServiceImpl userServiceSpy = Mockito.spy(userService);
-        doReturn(response).when(userServiceSpy).createUserInOkta(userCreationRequest);
+        when(client.newCall(any(Request.class))).thenReturn(call);
+        when(call.execute()).thenReturn(response);
 
-        Response result = userServiceSpy.createUserInOkta(userCreationRequest);
+        // Act
+        Response result = userService.createUserInOkta(userCreationRequest);
 
+        // Assert
         assertEquals(200, result.code());
         assertEquals("OK", result.message());
+
+        ArgumentCaptor<Request> requestCaptor = ArgumentCaptor.forClass(Request.class);
+        verify(client).newCall(requestCaptor.capture());
+        Request actualRequest = requestCaptor.getValue();
+
+        assertEquals("https://dev-82475405.okta.com/api/v1/users?activate=false", actualRequest.url().toString());
+        assertEquals("POST", actualRequest.method());
+        assertEquals("application/json; charset=utf-8", actualRequest.body().contentType().toString());
     }
 
     @Test
@@ -70,7 +82,11 @@ class UserServiceImplTest {
 
     @Test
     void findAll() {
-        userService.findAll();
+        List<User> expectedUsers = Arrays.asList(new User(), new User());
+
+        when(userRepository.findAll()).thenReturn(expectedUsers);
+
+        List<User> actualUsers = userService.findAll();
 
         verify(userRepository, times(1)).findAll();
     }
@@ -80,7 +96,7 @@ class UserServiceImplTest {
         String username = "test";
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(new User()));
 
-        User user = userService.findByUsername(username);
+        User user = userService.findUser(username,null);
 
         assertNotNull(user);
     }
@@ -89,46 +105,31 @@ class UserServiceImplTest {
     void findByUsernameNotFound() {
         String username = "test";
         when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
-
-        assertThrows(UsernameNotFoundException.class, () -> userService.findByUsername(username));
+        assertThrows(UsernameNotFoundException.class, () -> userService.findUser(username,null));
     }
 
-    @Test
-    void findUserById() {
-        UUID id = UUID.randomUUID();
-        when(userRepository.findById(id)).thenReturn(Optional.of(new User()));
-
-        Optional<User> user = userService.findUserById(id);
-
-        assertTrue(user.isPresent());
-    }
-
-    @Test
-    void deleteByUsername() {
-        String username = "test";
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(new User()));
-
-        userService.deleteByUsername(username);
-
-        verify(userRepository, times(1)).delete(any(User.class));
-    }
 
     @Test
     void deleteByUsernameNotFound() {
         String username = "test";
         when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
 
-        assertThrows(UsernameNotFoundException.class, () -> userService.deleteByUsername(username));
+        assertThrows(UsernameNotFoundException.class, () -> userService.deleteUser(username, null));
+
+        verify(userRepository, times(1)).findByUsername(username);
+        verify(userRepository, never()).delete(any(User.class));
     }
 
     @Test
     void deleteById() {
         UUID id = UUID.randomUUID();
-        when(userRepository.existsById(id)).thenReturn(true);
+        User user = new User();
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
 
-        userService.deleteById(id);
+        userService.deleteUser(null, id);
 
-        verify(userRepository, times(1)).deleteById(id);
+        verify(userRepository, times(1)).findById(id);
+        verify(userRepository, times(1)).delete(user);
     }
 
     @Test
@@ -142,21 +143,6 @@ class UserServiceImplTest {
         verify(userRepository, times(1)).save(any(User.class));
     }
 
-    @Test
-    void deleteByUsernameThrowsExceptionForNonExistingUser() {
-        String username = "nonExistingUser";
-        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
-
-        assertThrows(UsernameNotFoundException.class, () -> userService.deleteByUsername(username));
-    }
-
-    @Test
-    void deleteByIdThrowsExceptionForNonExistingUser() {
-        UUID id = UUID.randomUUID();
-        when(userRepository.findById(id)).thenReturn(Optional.empty());
-
-        assertThrows(UsernameNotFoundException.class, () -> userService.deleteById(id));
-    }
 
     @Test
     void setRatingAddsRatingToUser() {
@@ -171,7 +157,34 @@ class UserServiceImplTest {
         verify(userRepository, times(1)).save(user);
     }
 
+    @Test
+    void createUserInOktaThrowsException() throws IOException {
+        UserCreationRequest userCreationRequest = new UserCreationRequest();
+        userCreationRequest.setFirstName("Test");
+        userCreationRequest.setLastName("User");
+        userCreationRequest.setEmail("testuser@gmail.com");
+        userCreationRequest.setPassword("password");
 
+        UserService userServiceSpy = Mockito.spy(userService);
+        doThrow(RuntimeException.class).when(userServiceSpy).createUserInOkta(userCreationRequest);
 
+        assertThrows(RuntimeException.class, () -> userServiceSpy.createUserInOkta(userCreationRequest));
+    }
 
+    @Test
+    void deleteUserThrowsExceptionWhenUsernameAndIdAreNull() {
+        assertThrows(IllegalArgumentException.class, () -> userService.deleteUser(null, null));
+    }
+
+    @Test
+    void findUserThrowsExceptionWhenUsernameAndIdAreNull() {
+        assertThrows(IllegalArgumentException.class, () -> userService.findUser(null, null));
+    }
+
+    @Test
+    void findUserByIdNotFound() {
+        UUID id = UUID.randomUUID();
+        when(userRepository.findById(id)).thenReturn(Optional.empty());
+        assertThrows(UsernameNotFoundException.class, () -> userService.findUser(null, id));
+    }
 }

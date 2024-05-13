@@ -3,10 +3,11 @@ package cat.uvic.xips.controller;
 import cat.uvic.xips.entities.Product;
 import cat.uvic.xips.entities.ProductType;
 import cat.uvic.xips.services.ProductService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,12 +38,18 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        return new ResponseEntity<>(productService.save(product),HttpStatus.CREATED);
+        Product savedProduct = productService.save(product);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedProduct.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(savedProduct);
     }
 
     @PutMapping("/{id}")
-    public Product updateProduct(@PathVariable UUID id, @RequestBody Product product) {
-        return productService.save(product);
+    public ResponseEntity<Product> updateProduct(@PathVariable UUID id, @RequestBody Product product) {
+        productService.update(id, product);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
