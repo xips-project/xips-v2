@@ -8,15 +8,15 @@ import java.util.UUID;
 
 public interface ProductService {
 
-    public List<Product> findAll();
+    List<Product> findAll();
 
-    public Product findById(UUID id);
+    Product findById(UUID id);
 
-    public Product save(Product product);
+    Product save(Product product);
 
-    public void remove(UUID id);
+    void remove(UUID id);
 
-    public List<Product> findAllByProductType(ProductType productType);
+    List<Product> findAllByProductType(ProductType productType);
 
 
 

@@ -1,0 +1,16 @@
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://www.ehcache.org/ehcache.xsd"
+>
+
+    <cache name="products"
+           maxEntriesLocalHeap="100"
+           maxEntriesLocalDisk="1000"
+           diskSpoolBufferSizeMB="20"
+           timeToIdleSeconds="300"
+           timeToLiveSeconds="900"
+           memoryStoreEvictionPolicy="LFU"
+    >
+        <persistence strategy="localTempSwap"/>
+    </cache>
+
+</ehcache>

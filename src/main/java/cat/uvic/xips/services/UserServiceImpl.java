@@ -1,6 +1,5 @@
 package cat.uvic.xips.services;
 
-import cat.uvic.xips.controller.NotFoundException;
 import cat.uvic.xips.dto.UserCreationRequest;
 import cat.uvic.xips.entities.Rating;
 import cat.uvic.xips.entities.User;
@@ -8,7 +7,10 @@ import cat.uvic.xips.entities.UserProfile;
 import cat.uvic.xips.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -103,7 +105,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteById(UUID id) {
         if (!userRepository.existsById(id)) {
-            throw new NotFoundException("User not found");
+            throw new UsernameNotFoundException("User not found");
         }
         userRepository.deleteById(id);
     }

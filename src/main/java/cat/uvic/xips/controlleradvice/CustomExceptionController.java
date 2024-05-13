@@ -1,6 +1,7 @@
-package cat.uvic.xips.controller;
+package cat.uvic.xips.controlleradvice;
 
 import cat.uvic.xips.dto.ErrorResponse;
+import cat.uvic.xips.exception.ProductNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,8 +49,8 @@ public class CustomExceptionController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<?> wasNotFoundHandler(HttpServletRequest request, NotFoundException ex){
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<?> wasNotFoundHandler(HttpServletRequest request, ProductNotFoundException ex){
         return ResponseEntity.notFound().build();
     }
 }
