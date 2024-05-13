@@ -13,7 +13,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn verify'
+                sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/Maven_3.9.6/bin/mvn verify'
             }
         }
 
@@ -21,7 +21,7 @@ pipeline {
         stage('Sonar Scan') {
             steps {
                 withSonarQubeEnv('sonarcloud') {
-                    sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn sonar:sonar -Pcoverage -Dsonar.token=99ca41e7cdcf8d690af802b3917bbe26f2c716d8 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=xips-project -Dsonar.projectKey=xips-v2'
+                    sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/Maven_3.9.6/bin/mvn sonar:sonar -Pcoverage -Dsonar.token=99ca41e7cdcf8d690af802b3917bbe26f2c716d8 -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=xips-project -Dsonar.projectKey=xips-v2'
                 }
             }
         }
@@ -52,7 +52,7 @@ pipeline {
 
         stage('PIT Mutation') {
             steps {
-               sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn -DwithHistory org.pitest:pitest-maven:mutationCoverage'
+               sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/Maven_3.9.6/bin/mvn -DwithHistory org.pitest:pitest-maven:mutationCoverage'
                sh 'ls -l target/pit-reports' // Add this line
             }
         }
@@ -62,7 +62,7 @@ pipeline {
         stage('Retrieve version') {
             steps {
                 script {
-                    version = sh(script: '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true).trim()
+                    version = sh(script: '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/Maven_3.9.6/bin/mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true).trim()
                     echo "Retrieved version: ${version}"
                     writeFile file: "${env.WORKSPACE}/TAG_NAME", text: "TAG_NAME=${version}"
                 }
