@@ -10,11 +10,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -23,6 +25,12 @@ class ProductServiceImplTest {
 
     @Mock
     CacheManager cacheManager;
+
+    @Mock
+    Cache cache;
+
+    @Mock
+    List<Product> cachedProducts;
 
     @Mock
     private ProductRepository productRepository;
@@ -38,9 +46,13 @@ class ProductServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        when(cacheManager.getCache("products")).thenReturn(cache);
+        when(cache.get(any(), any(Callable.class))).thenAnswer(invocation -> {
+            Callable<List<Product>> callable = invocation.getArgument(1);
+            return callable.call();
+        });
         productService = new ProductServiceImpl(productRepository, cacheManager);
     }
-
     @Test
     void findByIdThrowsExceptionWhenProductNotFound() {
         UUID id = UUID.randomUUID();
