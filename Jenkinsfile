@@ -6,17 +6,17 @@ pipeline {
         SONAR_TOKEN = credentials('SONAR_TOKEN')
     }
     stages {
-        /* stage('Checkout') {
+        stage('Checkout') {
             steps {
                 checkout scm
             }
-        } */
+        }
 
-       /*  stage('Build') {
+        stage('Build') {
             steps {
                 sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn verify'
             }
-        } */
+        }
 
 
         stage('Sonar Scan') {
@@ -52,14 +52,11 @@ pipeline {
         }
 
         stage('PIT Mutation') {
-                    steps {
-                        sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn -DwithHistory test-compile org.pitest:pitest-maven:mutationCoverage'
-                        sh 'ls -l target/pit-reports' // Add this line
-
-
-
-                    }
-                }
+            steps {
+               sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/maven/bin/mvn org.pitest:pitest-maven:mutationCoverage'
+               sh 'ls -l target/pit-reports' // Add this line
+            }
+        }
 
 
 
@@ -131,8 +128,8 @@ pipeline {
         always {
             archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             junit 'target/surefire-reports/*.xml'
-            // Not creating reports correctly
-            //pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+            // Jenkins plugin outdated and not reading xml file properly
+            // pitmutation killRatioMustImprove: false, minimumKillRatio: 50.0, mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
         }
     }
 }
