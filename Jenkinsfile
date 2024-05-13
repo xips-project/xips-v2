@@ -123,7 +123,7 @@ mutations.xml'
         stage('Set up Docker Buildx') {
             steps {
                 script {
-                    sh 'docker buildx create ---use my-context'
+                    sh 'docker buildx create --use my-context'
                 }
             }
         }
