@@ -27,7 +27,7 @@ pipeline {
             steps {
                 script {
                     def qualityGateStatus = ''
-                    def timeoutMinutes = 30 // Adjust the timeout as needed
+                    def timeoutMinutes = 30
 
                     echo "Polling SonarQube for Quality Gate status..."
                     timeout(time: timeoutMinutes, unit: 'MINUTES') {
@@ -50,7 +50,7 @@ pipeline {
         stage('PIT Mutation') {
             steps {
                sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/Maven_3.9.6/bin/mvn -DwithHistory org.pitest:pitest-maven:mutationCoverage'
-               sh 'ls -l target/pit-reports' // Add this line
+               sh 'ls -l target/pit-reports'
             }
         }
 
@@ -66,20 +66,6 @@ pipeline {
             }
         }
 
-       /*  stage('Setup Docker Context') {
-            steps {
-                script {
-                    sh 'docker context rm my-context'
-                    def contextExists = sh(script: 'docker context inspect my-context >/dev/null 2>&1', returnStatus: true)
-                    if (contextExists != 0) {
-                        sh 'docker context create my-context'
-
-                    }
-                    sh 'docker context use my-context'
-                }
-            }
-        }
- */
 
         stage('Login to Docker Hub') {
             steps {
@@ -91,14 +77,6 @@ pipeline {
                 }
             }
         }
-
-       /*  stage('Set up Docker Buildx') {
-            steps {
-                script {
-                    sh 'docker buildx create --use my-context'
-                }
-            }
-        } */
 
         stage('Build and push') {
             steps {
