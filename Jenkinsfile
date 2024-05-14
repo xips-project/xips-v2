@@ -66,7 +66,7 @@ pipeline {
             }
         }
 
-        stage('Setup Docker Context') {
+       /*  stage('Setup Docker Context') {
             steps {
                 script {
                     sh 'docker context rm my-context'
@@ -79,7 +79,7 @@ pipeline {
                 }
             }
         }
-
+ */
         stage('Login to Docker Hub') {
             steps {
                 withCredentials([
@@ -94,7 +94,7 @@ pipeline {
         stage('Set up Docker Buildx') {
             steps {
                 script {
-                    sh 'docker buildx create --use my-context'
+                    sh 'docker buildx create --use'
                 }
             }
         }
