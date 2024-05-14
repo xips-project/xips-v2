@@ -13,9 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 
@@ -28,69 +26,54 @@ public class UserController {
 
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/create")
-    public ResponseEntity<?> create(@Valid @RequestBody UserCreationRequest userCreationRequest) throws IOException {
+    public ResponseEntity<User> create(@Valid @RequestBody UserCreationRequest userCreationRequest) {
         userService.createUserInOkta(userCreationRequest);
-        userService.save(userCreationRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body("User created");
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(userCreationRequest));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/user")
-    public ResponseEntity<?> getUser(@RequestParam(name = "username", required = false) String username,
-                                     @RequestParam(name = "id", required = false) UUID id) {
-        if (username != null) {
-            return ResponseEntity.ok(userService.findByUsername(username));
-        } else if (id != null) {
-            return ResponseEntity.ok(userService.findUserById(id));
-        } else {
-            return ResponseEntity.badRequest().body("You must provide an id or username.");
-        }
+    public ResponseEntity<User> getUser(@RequestParam(name = "username", required = false) String username,
+                                        @RequestParam(name = "id", required = false) UUID id) {
+
+        return ResponseEntity.ok(userService.findUser(username, id));
     }
 
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers(){
+    public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.findAll();
         return ResponseEntity.ok().body(users);
     }
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteUser(@RequestParam(name = "username", required = false) String username,
-                                        @RequestParam(name = "id", required = false) UUID id) {
-        if (username != null) {
-            userService.deleteByUsername(username);
-            return ResponseEntity.ok().body("User: "+username+" has been deleted");
-        } else if (id != null) {
-            userService.deleteById(id);
-            return ResponseEntity.ok().body("User with id: "+id+" has been deleted");
-        } else {
-            return ResponseEntity.badRequest().body("You must provide an id or username.");
-        }
+    public ResponseEntity<HttpStatus> deleteUser(@RequestParam(name = "username", required = false) String username,
+                                                 @RequestParam(name = "id", required = false) UUID id) {
+        userService.deleteUser(username, id);
+        return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PutMapping("/update-user-data/{username}")
-    public void updateUserData(@PathVariable String username, @Valid @RequestBody UpdateUserRequest request){
-        User user = userService.findByUsername(username);
+    public void updateUserData(@PathVariable String username, @Valid @RequestBody UpdateUserRequest request) {
+        User user = userService.findUser(username,null);
         user.setUserProfile(UserProfile.builder()
-                        .birthdate(request.getBirthdate())
-                        .address(request.getAddress())
-                        .zipCode(request.getZipCode())
-                        .country(request.getCountry())
-                        .cityName(request.getCityName())
+                .birthdate(request.getBirthdate())
+                .address(request.getAddress())
+                .zipCode(request.getZipCode())
+                .country(request.getCountry())
+                .cityName(request.getCityName())
                 .build());
+
+        userService.save(user);
     }
 
     @PostMapping("/{username}/rating")
-    private ResponseEntity<String> setRating(@PathVariable String username, @org.springframework.web.bind.annotation.RequestBody Rating ratingRequest){
+    private ResponseEntity<Rating> setRating(@PathVariable String username, @org.springframework.web.bind.annotation.RequestBody Rating ratingRequest) {
 
-        User user = userService.findByUsername(username);
-
-        if (user==null){
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
+        User user = userService.findUser(username,null);
 
         Rating rating = Rating.builder()
                 .user(user)
@@ -100,31 +83,22 @@ public class UserController {
 
         userService.setRating(rating);
 
-        return ResponseEntity.ok().body(rating.toString());
+        return ResponseEntity.ok().body(rating);
     }
 
     @PostMapping("/{id}/rating")
-    private ResponseEntity<String> setRatingById(@PathVariable UUID id, @RequestBody Rating ratingRequest){
-        Optional<User> optionalUser = userService.findUserById(id);
+    private ResponseEntity<Rating> setRatingById(@PathVariable UUID id, @RequestBody Rating ratingRequest) {
+        User user = userService.findUser(null,id);
 
-        if (optionalUser.isPresent()){
+        Rating rating = Rating.builder()
+                .user(user)
+                .stars(ratingRequest.getStars())
+                .message(ratingRequest.getMessage())
+                .build();
 
-            User user = optionalUser.get();
+        userService.setRating(rating);
 
-            Rating rating = Rating.builder()
-                    .user(user)
-                    .stars(ratingRequest.getStars())
-                    .message(ratingRequest.getMessage())
-                    .build();
-
-            userService.setRating(rating);
-
-            return ResponseEntity.ok().body(rating.toString());
-
-        }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        return ResponseEntity.ok().body(rating);
 
     }
-
 }

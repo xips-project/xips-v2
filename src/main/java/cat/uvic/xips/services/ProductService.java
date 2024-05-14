@@ -20,4 +20,6 @@ public interface ProductService {
 
 
 
+
+    Product update(UUID id, Product updatedProduct);
 }

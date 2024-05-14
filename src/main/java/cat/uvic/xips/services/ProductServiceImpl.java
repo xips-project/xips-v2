@@ -61,6 +61,19 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new RuntimeException("Error retrieving products from cache"));
     }
 
+    @Override
+    public Product update(UUID id, Product updatedProduct) {
+        return productRepository.findById(id)
+                .map(product -> {
+                    product.setName(updatedProduct.getName());
+                    product.setProductType(updatedProduct.getProductType());
+                    Product savedProduct = productRepository.save(product);
+                    updateCachedList(savedProduct);
+                    return savedProduct;
+                })
+                .orElseThrow(() -> new ProductNotFoundException("Product with id: " + id + " not found."));
+    }
+
     private void updateCachedList(Product product) {
         try {
             List<Product> cachedProducts = productsCache.get("", ArrayList::new);

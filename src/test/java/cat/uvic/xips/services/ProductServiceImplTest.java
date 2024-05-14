@@ -6,10 +6,11 @@ import cat.uvic.xips.exception.ProductNotFoundException;
 import cat.uvic.xips.repositories.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 
@@ -21,6 +22,7 @@ import java.util.concurrent.Callable;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
 
     @Mock
@@ -28,9 +30,6 @@ class ProductServiceImplTest {
 
     @Mock
     Cache cache;
-
-    @Mock
-    List<Product> cachedProducts;
 
     @Mock
     private ProductRepository productRepository;
@@ -45,9 +44,8 @@ class ProductServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         when(cacheManager.getCache("products")).thenReturn(cache);
-        when(cache.get(any(), any(Callable.class))).thenAnswer(invocation -> {
+        lenient(). when(cache.get(any(), any(Callable.class))).thenAnswer(invocation -> {
             Callable<List<Product>> callable = invocation.getArgument(1);
             return callable.call();
         });
@@ -116,6 +114,28 @@ class ProductServiceImplTest {
         Product updatedProduct = productService.save(existingProduct);
 
         assertEquals(existingProduct, updatedProduct);
+    }
+
+    @Test
+    void updateUpdatesExistingProduct() {
+        UUID id = UUID.randomUUID();
+        Product existingProduct = new Product();
+        existingProduct.setId(id);
+        Product updatedProduct = new Product();
+        updatedProduct.setName("Updated Name");
+        updatedProduct.setProductType(ProductType.BOOKS);
+        when(productRepository.findById(id)).thenReturn(Optional.of(existingProduct));
+        when(productRepository.save(any(Product.class))).thenReturn(updatedProduct);
+
+        Product resultProduct = productService.update(id, updatedProduct);
+
+        assertAll(
+                () -> assertEquals(updatedProduct.getName(), resultProduct.getName()),
+                () -> assertEquals(updatedProduct.getProductType(), resultProduct.getProductType()),
+                () -> verify(productRepository, times(1)).save(productCaptor.capture()),
+                () -> assertEquals(updatedProduct.getName(), productCaptor.getValue().getName()),
+                () -> assertEquals(updatedProduct.getProductType(), productCaptor.getValue().getProductType())
+        );
     }
 
     @Test

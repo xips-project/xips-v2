@@ -1,6 +1,5 @@
 package cat.uvic.xips.controller;
 
-import cat.uvic.xips.controller.UserController;
 import cat.uvic.xips.dto.UserCreationRequest;
 import cat.uvic.xips.entities.Role;
 import cat.uvic.xips.entities.User;
@@ -10,12 +9,10 @@ import cat.uvic.xips.security.config.ApplicationConfig;
 import cat.uvic.xips.security.config.SecurityConfig;
 import cat.uvic.xips.security.jwt.JWTService;
 import cat.uvic.xips.services.UserServiceImpl;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,17 +24,15 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.Instant;
 import java.time.LocalDate;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -59,16 +54,19 @@ class UserControllerTest {
     @MockBean
     UserServiceImpl userService;
 
+    @Autowired
+    ObjectMapper objectMapper;
+
     private static List<User> users;
 
 
     static SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor jwtRequestPostProcessor() {
 
-        return jwt().jwt(jwt -> jwt.claims(claims -> {
-
-                })
-                .tokenValue("messaging-client")
-                .notBefore(Instant.now().minusSeconds(5L)));
+        return jwt().jwt(jwt -> jwt
+                .claim("sub", "testUser")
+                .claim("roles", "USER")
+                .notBefore(Instant.now())
+        );
     }
 
     @BeforeAll
@@ -119,47 +117,56 @@ class UserControllerTest {
     void shouldGetUserByUsername() throws Exception {
 
         User user = new User();
-        String username = "test@email.com";
+        String username = "test@gmail.com";
         user.setUsername(username);
 
-        when(userService.findByUsername(username)).thenReturn(user);
+        when(userService.findUser(username, null)).thenReturn(user);
 
         mockMvc.perform(get("/api/v1/users/user")
-                        .contentType(MediaType.APPLICATION_JSON)
                         .with(jwtRequestPostProcessor())
                         .param("username", username))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.username").value(username));
+                .andExpect(content().json(objectMapper.writeValueAsString(user)));
 
     }
 
     @Test
-    void shouldGetUserById() throws Exception {
-
+    void shouldGetUserId() throws Exception {
         User user = new User();
         UUID id = UUID.randomUUID();
         user.setId(id);
 
-        when(userService.findUserById(id)).thenReturn(Optional.of(user));
+        when(userService.findUser(null, id)).thenReturn(user);
 
         mockMvc.perform(get("/api/v1/users/user")
-                        .contentType(MediaType.APPLICATION_JSON)
                         .with(jwtRequestPostProcessor())
                         .param("id", id.toString()))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(id.toString()));
-
+                .andExpect(content().json(objectMapper.writeValueAsString(user)));
     }
 
     @Test
     void shouldReturnBadRequestWhenNoIdOrUsernameProvided() throws Exception {
+
+        when(userService.findUser(isNull(),isNull()))
+                .thenThrow(new IllegalArgumentException(""));
+
         mockMvc.perform(get("/api/v1/users/user")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .with(jwtRequestPostProcessor()))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("You must provide an id or username."));
+                        .with(jwtRequestPostProcessor()))
+
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldGetUserByUsernameOrId() throws Exception {
+        String username = "testUser";
+        UUID id = UUID.randomUUID();
+
+        mockMvc.perform(get("/api/v1/users/user")
+                        .with(jwtRequestPostProcessor())
+                        .param("username", username)
+                        .param("id", id.toString()))
+                .andExpect(status().isOk());
     }
 
     @Test

@@ -1,16 +1,18 @@
 package cat.uvic.xips.security.jwt;
 
-import cat.uvic.xips.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 
@@ -19,7 +21,8 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JWTService {
 
-    public static final String SECRET_KEY = "tBTeEle6IfDgxVXwH0s7bp0aPhQpW9Bw/tppsLTyMJ580KlH1g6ZULwpk5270frEhCtBoditMX9TlBhhZSrlSg==";
+    @Value("${xips-v2.jwt_secret}")
+    private  String jwtSecret;
 
     public String getToken(UserDetails user){
         return getToken(new HashMap<>(), user);
@@ -37,7 +40,7 @@ public class JWTService {
     }
 
     public SecretKey generateKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 

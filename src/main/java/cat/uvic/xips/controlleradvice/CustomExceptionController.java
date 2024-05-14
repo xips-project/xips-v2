@@ -53,4 +53,10 @@ public class CustomExceptionController {
     public ResponseEntity<?> wasNotFoundHandler(HttpServletRequest request, ProductNotFoundException ex){
         return ResponseEntity.notFound().build();
     }
+
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> illegalArgumentExceptionHandler(HttpServletRequest request, IllegalArgumentException ex){
+        return ResponseEntity.badRequest().build();
+    }
 }
