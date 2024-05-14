@@ -22,7 +22,7 @@ public class CacheController {
     }
 
     @GetMapping("clearCache")
-    public ResponseEntity<?> evictSingleCacheByName() {
+    public ResponseEntity<?> evictAllCaches() {
         cacheService.clearAllCaches();
         return ResponseEntity.ok().build();
     }

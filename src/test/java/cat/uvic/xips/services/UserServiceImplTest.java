@@ -22,7 +22,6 @@ import static org.mockito.Mockito.*;
 
 class UserServiceImplTest {
 
-
     private UserRepository userRepository;
 
     private UserService userService;

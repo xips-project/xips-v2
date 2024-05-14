@@ -6,10 +6,11 @@ import cat.uvic.xips.exception.ProductNotFoundException;
 import cat.uvic.xips.repositories.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 
@@ -21,6 +22,7 @@ import java.util.concurrent.Callable;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
 
     @Mock
@@ -28,9 +30,6 @@ class ProductServiceImplTest {
 
     @Mock
     Cache cache;
-
-    @Mock
-    List<Product> cachedProducts;
 
     @Mock
     private ProductRepository productRepository;
@@ -45,9 +44,8 @@ class ProductServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         when(cacheManager.getCache("products")).thenReturn(cache);
-        when(cache.get(any(), any(Callable.class))).thenAnswer(invocation -> {
+        lenient(). when(cache.get(any(), any(Callable.class))).thenAnswer(invocation -> {
             Callable<List<Product>> callable = invocation.getArgument(1);
             return callable.call();
         });
