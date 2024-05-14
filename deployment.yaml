@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: xips-deployment
+  labels:
+    app: xips
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: xips
+  template:
+    metadata:
+      labels:
+        app: xips
+    spec:
+      containers:
+        - name: xips
+          image: ${DOCKER_USERNAME}/xips-v2:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: xips-secret
+                  key: spring_datasource_url
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: xips-secret
+                  key: spring_datasource_username
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: xips-secret
+                  key: spring_datasource_password
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: xips-secret
+                  key: xips_v2_jwt_secret
+          resources:
+            requests:
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: xips-service
+spec:
+  selector:
+    app: xips
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
+
+
+#  kubectl create secret generic xips-secret \
+#  --from-literal=spring_datasource_url= \
+#  --from-literal=spring_datasource_username= \
+#  --from-literal=spring_datasource_password= \
+#  --from-literal=xips_v2_jwt_secret=
