@@ -69,6 +69,7 @@ pipeline {
         stage('Setup Docker Context') {
             steps {
                 script {
+                    sh 'docker context rm my-context'
                     def contextExists = sh(script: 'docker context inspect my-context >/dev/null 2>&1', returnStatus: true)
                     if (contextExists != 0) {
                         sh 'docker context create my-context'
