@@ -116,7 +116,9 @@ pipeline {
                     }
 
                     def latestTag = "${dockerTag}:latest"
-                    sh "docker build -t ${latestTag} -t ${versionTag} ."
+                    sh "docker build -t ${dockerTag} ."
+                    sh "docker tag ${dockerTag} ${latestTag}"
+                    sh "docker tag ${dockerTag} ${versionTag}"
                     sh "docker push ${latestTag}"
                     sh "docker push ${versionTag}"
                 }
