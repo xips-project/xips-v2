@@ -66,11 +66,9 @@ pipeline {
             }
         }
 
-/*
         stage('Setup Docker Context') {
             steps {
                 script {
-                    sh 'docker context rm my-context'
                     def contextExists = sh(script: 'docker context inspect my-context >/dev/null 2>&1', returnStatus: true)
                     if (contextExists != 0) {
                         sh 'docker context create my-context'
@@ -80,7 +78,6 @@ pipeline {
                 }
             }
         }
- */
 
         stage('Login to Docker Hub') {
             steps {
@@ -96,7 +93,7 @@ pipeline {
         stage('Set up Docker Buildx') {
             steps {
                 script {
-                    sh 'docker buildx create --use'
+                    sh 'docker buildx create --use my-context'
                 }
             }
         }
