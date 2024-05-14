@@ -39,14 +39,10 @@ class JWTAuthenticationFilterTest {
     private FilterChain mockFilterChain;
 
     @BeforeEach
-    void setUp() throws IllegalAccessException, NoSuchFieldException {
+    void setUp() {
 
         mockUserDetails = new User("testUser", "testPassword", Collections.emptyList());
         jwtAuthenticationFilter = new JWTAuthenticationFilter(jwtService, userDetails -> mockUserDetails);
-
-       /* Field jwtSecretField = JWTService.class.getDeclaredField("jwtSecret");
-        jwtSecretField.setAccessible(true);
-        jwtSecretField.set(jwtService, "bXktYXBwLXN1cGVyLXNlY3JldC1mb3ItdGVzdHMtb25seQ==");*/
 
     }
 
