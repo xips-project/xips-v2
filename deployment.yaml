@@ -58,14 +58,3 @@ spec:
       port: 80
       targetPort: 8081
   type: LoadBalancer
-
-# Create secrets
-
-#  kubectl create secret generic xips-secret \
-#  --from-literal=spring_datasource_url= \
-#  --from-literal=spring_datasource_username= \
-#  --from-literal=spring_datasource_password= \
-#  --from-literal=xips_v2_jwt_secret=
-
-# Deploy
-# kubectl apply -f deployment.yaml

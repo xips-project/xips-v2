@@ -1,0 +1,32 @@
+Run using maven spring-boot plugin:
+
+mvn spring-boot:run \
+  -Dspring-boot.run.arguments="\
+    --spring.datasource.url=jdbc:postgresql://15.237.211.137:55432/xips_db_postgresql \
+    --spring.datasource.username=xips-admin \
+    --spring.datasource.password='1H2\"1raGygS^' \
+    --spring.jpa.hibernate.ddl-auto=validate \
+    --server.port=8081 \
+    --xips-v2.jwt_secret=tBTeEle6IfDgxVXwH0s7bp0aPhQpW9Bw/tppsLTyMJ580KlH1g6ZULwpk5270frEhCtBoditMX9TlBhhZSrlSg=="
+
+Run docker image:
+
+docker run \
+  -p 8081:8081 \
+  -e DATABASE_URL=jdbc:postgresql://15.237.211.137:55432/xips_db_postgresql \
+  -e DATABASE_USERNAME=xips-admin \
+  -e DATABASE_PASSWORD='1H2"1raGygS^' \
+  -e JWT_SECRET=tBTeEle6IfDgxVXwH0s7bp0aPhQpW9Bw/tppsLTyMJ580KlH1g6ZULwpk5270frEhCtBoditMX9TlBhhZSrlSg== \
+  xips-custom
+
+
+# Create secrets for kubernetes
+
+#  kubectl create secret generic xips-secret \
+#  --from-literal=spring_datasource_url= \
+#  --from-literal=spring_datasource_username= \
+#  --from-literal=spring_datasource_password= \
+#  --from-literal=xips_v2_jwt_secret=
+
+# Deploy on kubernetes
+# kubectl apply -f deployment.yaml
