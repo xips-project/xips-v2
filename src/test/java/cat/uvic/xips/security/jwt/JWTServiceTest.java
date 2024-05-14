@@ -5,19 +5,27 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.lang.reflect.Field;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
+
 class JWTServiceTest {
+
 
     private JWTService jwtService;
     private UserDetails mockUserDetails;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws NoSuchFieldException, IllegalAccessException {
         jwtService = new JWTService();
         mockUserDetails = new User("testUser", "testPassword", Collections.emptyList());
+
+        Field jwtSecretField = JWTService.class.getDeclaredField("jwtSecret");
+        jwtSecretField.setAccessible(true);
+        jwtSecretField.set(jwtService, "bXktYXBwLXN1cGVyLXNlY3JldC1mb3ItdGVzdHMtb25seQ==");
     }
 
     @Test

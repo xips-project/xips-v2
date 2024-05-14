@@ -13,10 +13,12 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+
 
 class JWTAuthenticationFilterTest {
 
@@ -34,11 +36,16 @@ class JWTAuthenticationFilterTest {
     private FilterChain mockFilterChain;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IllegalAccessException, NoSuchFieldException {
         MockitoAnnotations.openMocks(this);
         jwtService = new JWTService();
         mockUserDetails = new User("testUser", "testPassword", Collections.emptyList());
         jwtAuthenticationFilter = new JWTAuthenticationFilter(jwtService, userDetails -> mockUserDetails);
+
+        Field jwtSecretField = JWTService.class.getDeclaredField("jwtSecret");
+        jwtSecretField.setAccessible(true);
+        jwtSecretField.set(jwtService, "bXktYXBwLXN1cGVyLXNlY3JldC1mb3ItdGVzdHMtb25seQ==");
+
     }
 
     @Test
