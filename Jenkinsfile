@@ -105,22 +105,12 @@ pipeline {
                 script {
                     def dockerTag = "${DOCKER_USERNAME}/xips-v2"
                     def versionTag = "${dockerTag}:${version}"
-                    def branchName = env.BRANCH_NAME // Get the name of the current branch
-                    def prNumber = env.CHANGE_ID // Get the pull request number
-
-                    // Include branch name or pull request number in the image tag
-                    if (prNumber != null && prNumber != '') {
-                        dockerTag += "-PR-${prNumber}"
-                    } else {
-                        dockerTag += "-${branchName}"
-                    }
 
                     def latestTag = "${dockerTag}:latest"
-                    sh "docker build -t ${dockerTag} ."
-                    sh "docker tag ${dockerTag} ${latestTag}"
-                    sh "docker tag ${dockerTag} ${versionTag}"
-                    sh "docker push ${latestTag}"
-                    sh "docker push ${versionTag}"
+                    sh "docker buildx build --tag ${dockerTag} ."
+                    sh "docker buildx imagetools tag ${dockerTag} ${latestTag}"
+                    sh "docker buildx imagetools tag ${dockerTag} ${versionTag}"
+                    sh "docker buildx build --push --tag ${latestTag} --tag ${versionTag} ."
                 }
             }
         }
