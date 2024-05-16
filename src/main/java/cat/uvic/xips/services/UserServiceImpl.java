@@ -23,6 +23,7 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private static final String USER_NOT_FOUND = "User not found: ";
+    public static final String CONTENT_TYPE = "application/json";
     private final UserRepository userRepository;
     @Setter
     private OkHttpClient client = new OkHttpClient();
@@ -61,7 +62,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @SneakyThrows
     public okhttp3.Response createUserInOkta(UserCreationRequest userCreationRequest) {
-        MediaType mediaType = MediaType.parse("application/json");
+        MediaType mediaType = MediaType.parse(CONTENT_TYPE);
         String jsonBody = "{\"profile\": {\"firstName\": \"" + userCreationRequest.getFirstName()
                 + "\",\"lastName\": \"" + userCreationRequest.getLastName()
                 + "\",\"email\": \"" + userCreationRequest.getEmail()
@@ -73,8 +74,8 @@ public class UserServiceImpl implements UserService {
         Request request = new Request.Builder()
                 .url("https://dev-82475405.okta.com/api/v1/users?activate=false")
                 .method("POST", body)
-                .addHeader("Accept", "application/json")
-                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", CONTENT_TYPE)
+                .addHeader("Content-Type", CONTENT_TYPE)
                 .addHeader("Authorization", "SSWS 00E7XvYk01A3oILfuVfkyl_XmqhfA1JCtmbnLJfX3r")
                 .build();
 
