@@ -85,7 +85,7 @@ class UserServiceImplTest {
 
         when(userRepository.findAll()).thenReturn(expectedUsers);
 
-        List<User> actualUsers = userService.findAll();
+        userService.findAll();
 
         verify(userRepository, times(1)).findAll();
     }

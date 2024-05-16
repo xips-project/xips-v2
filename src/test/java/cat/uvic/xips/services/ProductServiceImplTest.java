@@ -17,7 +17,6 @@ import org.springframework.cache.CacheManager;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -44,11 +43,6 @@ class ProductServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        when(cacheManager.getCache("products")).thenReturn(cache);
-        lenient(). when(cache.get(any(), any(Callable.class))).thenAnswer(invocation -> {
-            Callable<List<Product>> callable = invocation.getArgument(1);
-            return callable.call();
-        });
         productService = new ProductServiceImpl(productRepository, cacheManager);
     }
     @Test

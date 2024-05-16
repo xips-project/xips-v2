@@ -1,6 +1,5 @@
 package cat.uvic.xips.dto;
 
-import jdk.jfr.Timestamp;
 import lombok.Data;
 
 import java.io.Serializable;

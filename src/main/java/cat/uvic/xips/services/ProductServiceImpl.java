@@ -5,25 +5,23 @@ import cat.uvic.xips.entities.ProductType;
 import cat.uvic.xips.exception.ProductNotFoundException;
 import cat.uvic.xips.repositories.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
-    private final Cache productsCache;
 
     public ProductServiceImpl(ProductRepository productRepository, CacheManager cacheManager) {
         this.productRepository = productRepository;
-        this.productsCache = cacheManager.getCache("products");
     }
 
     @Override

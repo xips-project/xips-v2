@@ -207,7 +207,6 @@ class UserControllerTest {
         userCreationRequest.setLastName("Madrid");
         userCreationRequest.setRole(Role.USER);
 
-        ObjectMapper objectMapper = new ObjectMapper();
         String requestBody = objectMapper.writeValueAsString(userCreationRequest);
 
         mockMvc.perform(post("/api/v1/users/create")

@@ -3,6 +3,7 @@ package cat.uvic.xips.controller;
 import cat.uvic.xips.entities.Product;
 import cat.uvic.xips.entities.ProductType;
 import cat.uvic.xips.services.ProductService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -53,7 +54,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProduct(@PathVariable UUID id) {
+    public ResponseEntity<HttpStatus> deleteProduct(@PathVariable UUID id) {
         productService.remove(id);
         return ResponseEntity.noContent().build();
     }

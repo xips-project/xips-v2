@@ -22,9 +22,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    private static final String USER_NOT_FOUND = "User not found: ";
     private final UserRepository userRepository;
     @Setter
-    private  OkHttpClient client = new OkHttpClient();
+    private OkHttpClient client = new OkHttpClient();
 
 
     @Override
@@ -90,22 +91,23 @@ public class UserServiceImpl implements UserService {
 
     public void deleteUser(String username, UUID id) {
 
-        if(username == null && id == null) {
+        if (username == null && id == null) {
             throw new IllegalArgumentException("should have smth in params");
         }
 
         if (username != null) {
             User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+                    .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND + username));
             userRepository.delete(user);
         }
 
         if (id != null) {
             User user = userRepository.findById(id)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found: " + id));
+                    .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND + id));
             userRepository.delete(user);
         }
     }
+
     @Override
     public void setRating(Rating rating) {
         User user = rating.getUser();
@@ -121,10 +123,10 @@ public class UserServiceImpl implements UserService {
         }
 
         if (username != null) {
-            return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+            return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND + username));
         }
 
-        return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found: " + id));
+        return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND + id));
 
     }
 

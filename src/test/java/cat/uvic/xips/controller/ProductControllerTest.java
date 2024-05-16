@@ -140,7 +140,6 @@ class ProductControllerTest {
         Product product = products.get(0);
         given(productService.findById(product.getId()))
                 .willThrow(new ProductNotFoundException("Product not found"));
-
         mockMvc.perform(get(basePath + "/" + product.getId())
                         .with(jwtRequestPostProcessor())
                         .contentType(MediaType.APPLICATION_JSON))

@@ -71,7 +71,7 @@ public class UserController {
     }
 
     @PostMapping("/{username}/rating")
-    private ResponseEntity<Rating> setRating(@PathVariable String username, @org.springframework.web.bind.annotation.RequestBody Rating ratingRequest) {
+    public ResponseEntity<Rating> setRating(@PathVariable String username, @org.springframework.web.bind.annotation.RequestBody Rating ratingRequest) {
 
         User user = userService.findUser(username,null);
 
@@ -87,7 +87,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}/rating")
-    private ResponseEntity<Rating> setRatingById(@PathVariable UUID id, @RequestBody Rating ratingRequest) {
+    public ResponseEntity<Rating> setRatingById(@PathVariable UUID id, @RequestBody Rating ratingRequest) {
         User user = userService.findUser(null,id);
 
         Rating rating = Rating.builder()
