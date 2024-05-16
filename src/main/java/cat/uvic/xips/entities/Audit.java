@@ -5,11 +5,12 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Embeddable
 @Data
-public class Audit {
+public class Audit implements Serializable {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
