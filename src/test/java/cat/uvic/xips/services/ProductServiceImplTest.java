@@ -11,8 +11,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,12 +21,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
-
-    @Mock
-    CacheManager cacheManager;
-
-    @Mock
-    Cache cache;
 
     @Mock
     private ProductRepository productRepository;
@@ -43,7 +35,7 @@ class ProductServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        productService = new ProductServiceImpl(productRepository, cacheManager);
+        productService = new ProductServiceImpl(productRepository);
     }
     @Test
     void findByIdThrowsExceptionWhenProductNotFound() {

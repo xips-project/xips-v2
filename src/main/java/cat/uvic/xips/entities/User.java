@@ -32,7 +32,7 @@ public class User implements UserDetails {
     @NotEmpty
     private String username;
 
-    @Pattern(regexp = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}")
+    @Pattern(regexp = "(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}")
     private String password;
 
     @Email
@@ -59,7 +59,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (role==null) return null;
+        if (role==null) return Collections.emptyList();
         return Collections.singletonList(new SimpleGrantedAuthority(role.name()));
     }
 

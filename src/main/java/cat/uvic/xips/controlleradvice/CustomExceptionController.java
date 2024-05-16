@@ -17,7 +17,7 @@ import java.util.Map;
 public class CustomExceptionController {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String,String>> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getFieldErrors().forEach(error ->
                 errors.put(error.getField(), "Field: " + error.getField() + ". " + error.getDefaultMessage()));
@@ -25,7 +25,7 @@ public class CustomExceptionController {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleAllOtherExceptions(HttpServletRequest request, Exception ex) {
+    public ResponseEntity<ErrorResponse> handleAllOtherExceptions(HttpServletRequest request, Exception ex) {
         ErrorResponse response = new ErrorResponse();
         response.setBackendMessage(ex.getLocalizedMessage());
         response.setUrl(request.getRequestURL().toString());
@@ -51,7 +51,13 @@ public class CustomExceptionController {
 
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<?> illegalArgumentExceptionHandler(HttpServletRequest request, IllegalArgumentException ex){
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<ErrorResponse> illegalArgumentExceptionHandler(HttpServletRequest request, IllegalArgumentException ex){
+        ErrorResponse response = new ErrorResponse();
+        response.setBackendMessage(ex.getLocalizedMessage());
+        response.setUrl(request.getRequestURL().toString());
+        response.setMethod(request.getMethod());
+        response.setMessage("Bad request");
+        response.setTimestamp(LocalDateTime.now());
+        return ResponseEntity.badRequest().body(response);
     }
 }

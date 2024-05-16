@@ -46,7 +46,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
         if (username!=null && SecurityContextHolder.getContext().getAuthentication()==null){
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            System.out.println(username);
 
             if (jwtService.isTokenValid(token, userDetails)) {
                 List<GrantedAuthority> authorities = userDetails.getAuthorities().stream()
@@ -55,7 +54,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                System.out.println(userDetails.getAuthorities());
             }
 
         }
@@ -72,18 +70,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             return authHeader.substring(7);
         }
 
-        /* Get token from cookies
-
-        Cookie[] cookies = request.getCookies();
-        if (cookies!=null){
-            for (Cookie cookie : cookies){
-                if ("token".equals(cookie.getName())){
-                    return cookie.getValue();
-                }
-            }
-        }
-
-         */
         return null;
     }
 
