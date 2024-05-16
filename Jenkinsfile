@@ -10,6 +10,7 @@ pipeline {
 
         stage('Build') {
             steps {
+                sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/Maven_3.9.6/bin/mvn clean'
                 sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/Maven_3.9.6/bin/mvn verify'
             }
         }
