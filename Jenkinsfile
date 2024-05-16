@@ -15,6 +15,7 @@ pipeline {
         }
 
 
+
         stage('Sonar Scan') {
             steps {
                 withSonarQubeEnv('sonarcloud') {
