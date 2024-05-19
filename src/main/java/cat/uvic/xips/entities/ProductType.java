@@ -1,10 +1,8 @@
 package cat.uvic.xips.entities;
 
 import lombok.Getter;
-import lombok.ToString;
 
 @Getter
-@ToString
 public enum ProductType {
 
     BOOKS("Books"),
