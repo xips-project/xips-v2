@@ -6,11 +6,11 @@
            maxEntriesLocalHeap="100"
            maxEntriesLocalDisk="1000"
            diskSpoolBufferSizeMB="20"
-           timeToIdleSeconds="300"
-           timeToLiveSeconds="900"
+           timeToIdleSeconds="30"
+           timeToLiveSeconds="60"
            memoryStoreEvictionPolicy="LFU"
     >
-        <persistence strategy="localTempSwap"/>
+        <persistence strategy="none"/>
     </cache>
 
 </ehcache>

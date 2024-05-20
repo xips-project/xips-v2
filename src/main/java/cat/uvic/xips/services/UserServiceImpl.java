@@ -92,9 +92,7 @@ public class UserServiceImpl implements UserService {
 
     public void deleteUser(String username, UUID id) {
 
-        if (username == null && id == null) {
-            throw new IllegalArgumentException("should have smth in params");
-        }
+        throwExceptionIfNullParams(username, id);
 
         if (username != null) {
             User user = userRepository.findByUsername(username)
@@ -119,9 +117,7 @@ public class UserServiceImpl implements UserService {
 
     public User findUser(String username, UUID id) {
 
-        if (username == null && id == null) {
-            throw new IllegalArgumentException("error");
-        }
+        throwExceptionIfNullParams(username, id);
 
         if (username != null) {
             return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND + username));
@@ -129,6 +125,12 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND + id));
 
+    }
+
+    private void throwExceptionIfNullParams(String username, UUID id) {
+        if (username == null && id == null) {
+            throw new IllegalArgumentException("User not found");
+        }
     }
 
 
