@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven_3.9.6'
+    }
+
     environment {
         DOCKER_USERNAME = credentials('DOCKER_USERNAME')
         DOCKER_TOKEN = credentials('DOCKER_TOKEN')
@@ -9,11 +13,11 @@ pipeline {
     stages {
 
         stage('Build') {
-            with('Maven_3.9.6') {
-                    steps {
+
+              steps {
                             sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/Maven_3.9.6/bin/mvn verify'
                         }
-            }
+
 
         }
 
