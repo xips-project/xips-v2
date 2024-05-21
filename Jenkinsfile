@@ -108,7 +108,7 @@ pipeline {
 
         success {
             jacoco(
-                execPattern: '**/build/jacoco/*.exec',
+                execPattern: 'target/*.exec',
                 classPattern: '**/build/classes/java/main',
                 sourcePattern: '**/src/main'
                     )
