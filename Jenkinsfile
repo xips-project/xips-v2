@@ -96,6 +96,13 @@ pipeline {
                 }
             }
         }
+
+        stage('Test') {
+                    steps {
+                        sh 'mvn test'
+                        sh 'ls -R target' // Print the target directory contents
+                    }
+                }
     }
 
     post {
@@ -109,8 +116,8 @@ pipeline {
         success {
             jacoco(
                 execPattern: 'target/*.exec',
-                classPattern: '**/build/classes/java/main',
-                sourcePattern: '**/src/main'
+                classPattern: '**/target/classes',
+                sourcePattern: '**/src/main/java'
                     )
                 }
     }
