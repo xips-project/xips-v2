@@ -108,6 +108,7 @@ pipeline {
 
         success {
             jacoco(
+                sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/Maven_3.9.6/bin/mvn verify -Pcoverage'
                 execPattern: '**/build/jacoco/*.exec',
                 classPattern: '**/build/classes/java/main',
                 sourcePattern: '**/src/main'
