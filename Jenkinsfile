@@ -84,16 +84,22 @@ pipeline {
                 script {
                     def dockerTag = "${DOCKER_USERNAME}/xips-v2"
                     def versionTag = "${dockerTag}:${version}"
-
                     def latestTag = "${dockerTag}:latest"
-                    sh "docker buildx build --tag ${dockerTag} ."
-                    sh "docker buildx imagetools tag ${dockerTag} ${latestTag}"
-                    sh "docker buildx imagetools tag ${dockerTag} ${versionTag}"
-                    sh "docker buildx build --push --tag ${latestTag} --tag ${versionTag} ."
+
+                    // Build the Docker image
+                    sh "docker build --tag ${dockerTag} ."
+
+                    // Tag the image with the latest and version tags
+                    sh "docker tag ${dockerTag} ${latestTag}"
+                    sh "docker tag ${dockerTag} ${versionTag}"
+
+                    // Push the images to the repository
+                    sh "docker push ${latestTag}"
+                    sh "docker push ${versionTag}"
                 }
             }
         }
-    }
+
 
     post {
         always {
