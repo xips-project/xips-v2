@@ -9,8 +9,8 @@ pipeline {
     stages {
 
         stage('Build') {
-            with('Maven_3.9.6'){
-            steps {
+            with('Maven_3.9.6') {
+                    steps {
                             sh '/var/jenkins_home/tools/hudson.tasks.Maven_MavenInstallation/Maven_3.9.6/bin/mvn verify'
                         }
             }
