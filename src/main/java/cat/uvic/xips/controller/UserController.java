@@ -5,7 +5,7 @@ import cat.uvic.xips.dto.UserCreationRequest;
 import cat.uvic.xips.entities.Rating;
 import cat.uvic.xips.entities.User;
 import cat.uvic.xips.entities.UserProfile;
-import cat.uvic.xips.services.UserServiceImpl;
+import cat.uvic.xips.services.imp.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

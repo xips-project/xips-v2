@@ -1,5 +1,6 @@
 package cat.uvic.xips.services;
 
+import cat.uvic.xips.services.imp.CacheServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

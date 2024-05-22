@@ -1,10 +1,11 @@
-package cat.uvic.xips.services;
+package cat.uvic.xips.services.imp;
 
 import cat.uvic.xips.dto.UserCreationRequest;
 import cat.uvic.xips.entities.Rating;
 import cat.uvic.xips.entities.User;
 import cat.uvic.xips.entities.UserProfile;
 import cat.uvic.xips.repositories.UserRepository;
+import cat.uvic.xips.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;

@@ -4,6 +4,8 @@ import cat.uvic.xips.entities.Product;
 import cat.uvic.xips.entities.ProductType;
 import cat.uvic.xips.exception.ProductNotFoundException;
 import cat.uvic.xips.repositories.ProductRepository;
+import cat.uvic.xips.repositories.RatingRepository;
+import cat.uvic.xips.services.imp.ProductServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +27,10 @@ class ProductServiceImplTest {
     @Mock
     private ProductRepository productRepository;
 
+
+    @Mock
+    private RatingRepository ratingRepository;
+
     @Captor
     private ArgumentCaptor<Product> productCaptor;
 
@@ -35,7 +41,7 @@ class ProductServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        productService = new ProductServiceImpl(productRepository);
+        productService = new ProductServiceImpl(productRepository,ratingRepository);
     }
     @Test
     void findByIdThrowsExceptionWhenProductNotFound() {

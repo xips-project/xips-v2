@@ -1,6 +1,5 @@
 package cat.uvic.xips;
 
-import cat.uvic.xips.bootstrap.DataInitializer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,11 +9,11 @@ import org.springframework.cache.annotation.EnableCaching;
 @EnableCaching
 public class XipsApplication implements CommandLineRunner {
 
-	private final DataInitializer dataInitializer;
+	//private final DataInitializer dataInitializer;
 
-    public XipsApplication(DataInitializer dataInitializer) {
+   /* public XipsApplication(DataInitializer dataInitializer) {
         this.dataInitializer = dataInitializer;
-    }
+    }*/
 
     public static void main(String[] args)  {
 		SpringApplication.run(XipsApplication.class, args);
@@ -24,6 +23,6 @@ public class XipsApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		//dataInitializer.initializeUsers();
 		//dataInitializer.initializeProducts();
-		dataInitializer.initializeRatings();
+		//dataInitializer.initializeRatings();
 	}
 }

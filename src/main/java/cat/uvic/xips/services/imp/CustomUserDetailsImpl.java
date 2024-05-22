@@ -1,4 +1,4 @@
-package cat.uvic.xips.services;
+package cat.uvic.xips.services.imp;
 
 import cat.uvic.xips.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
