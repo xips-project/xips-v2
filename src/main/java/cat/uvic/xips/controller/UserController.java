@@ -25,7 +25,7 @@ public class UserController {
     private final UserServiceImpl userService;
 
     @PreAuthorize("hasRole('USER')")
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<User> create(@Valid @RequestBody UserCreationRequest userCreationRequest) {
         userService.createUserInOkta(userCreationRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(userCreationRequest));
