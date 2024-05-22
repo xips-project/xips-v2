@@ -163,7 +163,7 @@ public class ProductServiceImpl implements ProductService {
                                 stats -> {
                                     Map<String, Double> finalStats = new HashMap<>();
                                     finalStats.put("Ratings", (double) stats.getCount());
-                                    finalStats.put("Total stars", (double) stats.getSum());
+                                    finalStats.put("Total stars", stats.getSum());
                                     finalStats.put("Average", stats.getAverage());
                                     return finalStats;
                                 }
