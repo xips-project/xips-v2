@@ -5,7 +5,7 @@ import cat.uvic.xips.dto.UserCreationRequest;
 import cat.uvic.xips.entities.Rating;
 import cat.uvic.xips.entities.User;
 import cat.uvic.xips.entities.UserProfile;
-import cat.uvic.xips.services.UserServiceImpl;
+import cat.uvic.xips.services.imp.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,7 +25,7 @@ public class UserController {
     private final UserServiceImpl userService;
 
     @PreAuthorize("hasRole('USER')")
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<User> create(@Valid @RequestBody UserCreationRequest userCreationRequest) {
         userService.createUserInOkta(userCreationRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(userCreationRequest));

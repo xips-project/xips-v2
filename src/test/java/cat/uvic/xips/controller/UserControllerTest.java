@@ -8,7 +8,7 @@ import cat.uvic.xips.repositories.UserRepository;
 import cat.uvic.xips.security.config.ApplicationConfig;
 import cat.uvic.xips.security.config.SecurityConfig;
 import cat.uvic.xips.security.jwt.JWTService;
-import cat.uvic.xips.services.UserServiceImpl;
+import cat.uvic.xips.services.imp.UserServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
@@ -209,7 +209,7 @@ class UserControllerTest {
 
         String requestBody = objectMapper.writeValueAsString(userCreationRequest);
 
-        mockMvc.perform(post("/api/v1/users/create")
+        mockMvc.perform(post("/api/v1/users")
                 .with(jwtRequestPostProcessor())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))

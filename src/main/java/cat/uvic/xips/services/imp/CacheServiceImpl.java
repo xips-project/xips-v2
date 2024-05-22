@@ -1,5 +1,6 @@
-package cat.uvic.xips.services;
+package cat.uvic.xips.services.imp;
 
+import cat.uvic.xips.services.CacheService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;

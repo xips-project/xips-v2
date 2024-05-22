@@ -2,7 +2,7 @@ package cat.uvic.xips.security.config;
 
 
 import cat.uvic.xips.repositories.UserRepository;
-import cat.uvic.xips.services.CustomUserDetailsImpl;
+import cat.uvic.xips.services.imp.CustomUserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
