@@ -41,7 +41,7 @@ public class User implements UserDetails {
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Rating> ratings = new ArrayList<>();
+    private transient List<Rating> ratings = new ArrayList<>();
 
     @Column(name="average_rating")
     private Double averageRating;
@@ -52,7 +52,7 @@ public class User implements UserDetails {
 
     @JsonIgnoreProperties({"user"})
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private UserProfile userProfile;
+    private transient UserProfile userProfile;
 
     @Embedded
     private Audit audit = new Audit();
