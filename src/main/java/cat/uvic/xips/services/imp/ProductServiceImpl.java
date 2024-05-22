@@ -88,6 +88,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
+    @Override
     public Map<String, Double> getAverageRatingsByUsers() {
         return ratingRepository.findAll().stream()
                 .collect(Collectors.groupingBy(
