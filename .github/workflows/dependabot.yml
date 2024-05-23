@@ -24,6 +24,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Create Maven Wrapper symbolic link
+        run: ln -s $(which mvn) ./mvnw
+
       - name: Build and check dependencies
         run: mvn dependency:tree
 
@@ -31,4 +34,3 @@ jobs:
         uses: advanced-security/maven-dependency-submission-action@v4.0.3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          mvn-path: mvn
