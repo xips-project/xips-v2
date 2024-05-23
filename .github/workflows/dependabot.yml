@@ -1,0 +1,38 @@
+name: Dependency Check
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  dependency-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build and check dependencies
+        run: mvn dependency:tree
+
+      - name: Submit Maven dependency report
+        uses: advanced-security/maven-dependency-submission-action@v4.0.3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
