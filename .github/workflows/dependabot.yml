@@ -36,4 +36,4 @@ jobs:
       - name: Submit Maven dependency report
         uses: advanced-security/maven-dependency-submission-action@v4.0.3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
