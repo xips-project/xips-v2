@@ -24,6 +24,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Remove existing Maven Wrapper symbolic link if it exists
+        run: rm -f ./mvnw
+
       - name: Create Maven Wrapper symbolic link
         run: ln -s $(which mvn) ./mvnw
 
